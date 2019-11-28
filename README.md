@@ -1,2 +1,2 @@
 # NewFileOrder
-Ultimate tool for keeping your digital junk organised
+The ultimate tool for keeping your digital junk organised
