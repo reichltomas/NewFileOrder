@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Linq;
 using Avalonia;
 using Avalonia.Logging.Serilog;
+using DynamicData;
+using NewFileOrder.Models;
+using NewFileOrder.Models.DbModels;
 using NewFileOrder.ViewModels;
 using NewFileOrder.Views;
 
@@ -28,7 +32,35 @@ namespace NewFileOrder
             {
                 DataContext = new MainWindowViewModel(),
             };
+// source of knowledge: https://docs.microsoft.com/en-us/ef/core/get-started/?tabs=visual-studio
+            using (var db = new MyDbContext())
+            {
+                // Create
+                Console.WriteLine("Insert");
+                db.Files.Add(new File { LastChecked = DateTime.Now, Hash = ";asdjfl;aj;", Path = "C:/nani" });
+                db.SaveChanges();
 
+                // Read
+                Console.WriteLine("Query");
+                var file = db.Files
+                    .OrderBy(b => b.Path)
+                    .First();
+
+                // Update
+                Console.WriteLine("Update");
+                file.Path = "C:/xd";
+                file.Tags.Add(
+                    new Tag
+                    {
+                        Name = "kendr",
+                    });
+                db.SaveChanges();
+
+                // Delete
+                Console.WriteLine("Delete");
+                db.Remove(file);
+                db.SaveChanges();
+            }
             app.Run(window);
         }
     }

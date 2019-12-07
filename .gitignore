@@ -338,3 +338,8 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+# Database
+*.db
+/NewFileOrder/NewFileOrder/TestDatabase.db-shm
+/NewFileOrder/NewFileOrder/TestDatabase.db-wal
+/NewFileOrder/NewFileOrder/Migrations
