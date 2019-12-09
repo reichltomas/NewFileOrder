@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReactiveUI;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,6 +7,18 @@ namespace NewFileOrder.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        public string Greeting => "Welcome to Avalonia!";
+        ViewModelBase content;
+
+        public ViewModelBase Content
+        {
+            get => content;
+            private set => this.RaiseAndSetIfChanged(ref content, value);
+        }
+
+        public MainWindowViewModel()
+        {
+            content = new SidePanelViewModel();
+        }
+
     }
 }
