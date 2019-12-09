@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NewFileOrder.Models.DbModels
 {
-    class Tag
+    class TagModel
     {
         [Key]
         public int TagId { get; set; }

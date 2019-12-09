@@ -37,7 +37,7 @@ namespace NewFileOrder
             {
                 // Create
                 Console.WriteLine("Insert");
-                db.Files.Add(new File { LastChecked = DateTime.Now, Hash = ";asdjfl;aj;", Path = "C:/nani" });
+                db.Files.Add(new FileModel { LastChecked = DateTime.Now, Hash = ";asdjfl;aj;", Path = "C:/nani" });
                 db.SaveChanges();
 
                 // Read
@@ -50,7 +50,7 @@ namespace NewFileOrder
                 Console.WriteLine("Update");
                 file.Path = "C:/xd";
                 file.Tags.Add(
-                    new Tag
+                    new TagModel
                     {
                         Name = "kendr",
                     });
