@@ -13,13 +13,21 @@
       <SubType>Designer</SubType>
     </AvaloniaResource>
     <AvaloniaResource Include="Assets\*" />
-    <Folder Include="Models\" />
+    <Folder Include="Services\" />
   </ItemGroup>
   <ItemGroup>
+    <AvaloniaResource Remove="Views\FilesFoundView.xaml" />
     <AvaloniaResource Remove="Views\HomeView.xaml" />
     <AvaloniaResource Remove="Views\SidePanelView.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="Migrations\20191211122414_Mig.cs" />
+    <Compile Remove="Migrations\20191211122414_Mig.Designer.cs" />
+    <Compile Remove="Migrations\20191211122436_Mig.cs" />
+    <Compile Remove="Migrations\20191211122436_Mig.Designer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Views\FilesFoundView.xaml" />
     <None Remove="Views\HomeView.xaml" />
     <None Remove="Views\SidePanelView.xaml" />
   </ItemGroup>
@@ -48,6 +56,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <EmbeddedResource Include="Views\SidePanelView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Views\FilesFoundView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>

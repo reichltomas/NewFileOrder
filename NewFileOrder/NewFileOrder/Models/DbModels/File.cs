@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NewFileOrder.Models.DbModels
 {
-    class FileModel
+    class File
     {
         [Key]
         public int FileId { get; set; }
@@ -16,7 +16,7 @@ namespace NewFileOrder.Models.DbModels
         [Required]
         public DateTime LastChecked { get; set; }
         public string Metadata { get; set; }
-        public List<TagModel> Tags { get; set; } = new List<TagModel>();
+        public List<Tag> Tags { get; set; } = new List<Tag>();
         //public bool Missing { get; set; } = false;
 
     }

@@ -5,15 +5,15 @@ using System.Text;
 
 namespace NewFileOrder.Models.DbModels
 {
-    class DirectoryModel
+    class Directory
     {
         [Key]
         public int DirectoryId { get; set; }
         [Required]
         public string Path { get; set; }
-        public List<FileModel> Files { get; set; } = new List<FileModel>();
-        public List<TagModel> Tags{ get; set; } = new List<TagModel>();
-        public List<DirectoryModel> Directories { get; set; } = new List<DirectoryModel>();
+        public List<File> Files { get; set; } = new List<File>();
+        public List<Tag> Tags{ get; set; } = new List<Tag>();
+        public List<Directory> Directories { get; set; } = new List<Directory>();
         //only content
         [Required]
         public string DirHash1 { get; set; }
