@@ -11,9 +11,10 @@ namespace NewFileOrder.Models
     class MyDbContext : DbContext
 
     {
-        public DbSet<File> Files { get; set; }
-        public DbSet<Directory> Directories{get;set;}
-               protected override void OnConfiguring(DbContextOptionsBuilder options)
-                    => options.UseSqlite("Data Source=TestDatabase.db");
+        public DbSet<FileModel> Files { get; set; }
+        public DbSet<DirectoryModel> Directories { get; set; }
+        public DbSet<TagModel> Tags { get; set; }
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
+            => options.UseSqlite("Data Source=nfodata.sqlite");
     }
 }
