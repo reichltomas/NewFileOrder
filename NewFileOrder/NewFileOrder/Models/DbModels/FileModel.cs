@@ -10,6 +10,7 @@ namespace NewFileOrder.Models.DbModels
         [Key]
         public int FileId { get; set; }
         [Required]
+        public string Name { get; set; }
         public string Path { get; set; }
         [Required]
         public string Hash { get; set; }

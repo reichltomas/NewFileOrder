@@ -340,6 +340,7 @@ ASALocalRun/
 healthchecksdb
 # Database
 *.db
+*.sqlite
 /NewFileOrder/NewFileOrder/TestDatabase.db-shm
 /NewFileOrder/NewFileOrder/TestDatabase.db-wal
 /NewFileOrder/NewFileOrder/Migrations
