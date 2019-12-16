@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NewFileOrder.Models.DbModels
 {
-    class DirectoryModel
+    class DirectoryModel 
     {
         [Key]
         public int DirectoryId { get; set; }

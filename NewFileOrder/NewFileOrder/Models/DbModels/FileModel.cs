@@ -11,6 +11,7 @@ namespace NewFileOrder.Models.DbModels
         public int FileId { get; set; }
         [Required]
         public string Name { get; set; }
+        [Required]
         public string Path { get; set; }
         [Required]
         public string Hash { get; set; }

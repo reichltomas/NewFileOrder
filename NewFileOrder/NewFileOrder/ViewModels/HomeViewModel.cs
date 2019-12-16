@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NewFileOrder.ViewModels
 {
-    class HomeViewModel : ViewModelBase
+    public class HomeViewModel : ViewModelBase
     {
 
     }

@@ -28,10 +28,7 @@ namespace NewFileOrder
         // container, etc.
         private static void AppMain(Application app, string[] args)
         {
-            var window = new MainWindow
-            {
-                DataContext = new MainWindowViewModel(),
-            };
+            
 // source of knowledge: https://docs.microsoft.com/en-us/ef/core/get-started/?tabs=visual-studio
             using (var db = new MyDbContext())
             {
@@ -60,8 +57,13 @@ namespace NewFileOrder
                 Console.WriteLine("Delete");
                 db.Remove(file);
                 db.SaveChanges();
+
+                var window = new MainWindow
+                {
+                    DataContext = new MainWindowViewModel(),
+                };
+                app.Run(window);
             }
-            app.Run(window);
         }
     }
 }

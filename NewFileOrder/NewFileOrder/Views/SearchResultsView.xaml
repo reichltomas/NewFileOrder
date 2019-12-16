@@ -1,0 +1,22 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="NewFileOrder.Views.SearchResultsView">
+  <WrapPanel Orientation="Horizontal" Background="Aqua">
+    <ItemsControl Items="{Binding Results}">
+      <ItemsControl.ItemTemplate>
+        <DataTemplate>
+          <Button Width="160" Height="160"
+                  Command="{Binding OpenFile}"
+                  CommandParameter="{Binding .}">
+            <DockPanel>
+              <TextBlock DockPanel.Dock="Bottom" Text="{Binding Name}" />
+            </DockPanel>
+          </Button>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+  </WrapPanel>
+</UserControl>

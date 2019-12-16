@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace NewFileOrder.Views
 {
-    public class SidePanelView : UserControl
+    public class SearchResultsView : UserControl
     {
-        public SidePanelView()
+        public SearchResultsView()
         {
             this.InitializeComponent();
         }
