@@ -19,7 +19,7 @@ namespace NewFileOrder.Models.DbModels
         public DateTime LastChecked { get; set; }
         public string Metadata { get; set; }
         public List<TagModel> Tags { get; set; } = new List<TagModel>();
-        //public bool Missing { get; set; } = false;
+        public bool IsMissing { get; set; } = false;
 
     }
 }

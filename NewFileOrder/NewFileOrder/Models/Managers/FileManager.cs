@@ -8,14 +8,25 @@ using System.Text;
 
 namespace NewFileOrder.Models
 {
-    class FileManager
+    class FileManager : Manager
     {
         private SHA256 _hasher = SHA256.Create();
-        private MyDbContext db;
+
+
+        private string FullPath(FileModel fm)
+        {
+            return fm.Path + "/"+ fm.Name;
+        }
         void PutFileInDB(FileModel file)
         {
-            db.Files.Add(file);
+            _db.Files.Add(file);
+            _db.SaveChanges();
         }
+
+        public FileManager(MyDbContext dbContext):base(dbContext)
+        {
+        }
+
 
         List<FileModel> ListDirectoryFiles(string path)
         {
@@ -31,11 +42,31 @@ namespace NewFileOrder.Models
             }
             return filesList;
         }
-        void PutFilesInDatabase(List<FileModel> list) 
+        void PutFilesInDatabase(List<FileModel> list)
         {
-                db.Files.AddRange(list);
+            _db.Files.AddRange(list);
+            _db.SaveChanges();
+        }        void UpdateFilesInDatabase(List<FileModel> list)
+        {
+            foreach(FileModel file in list)
+            {
+                if (!File.Exists(FullPath(file)))
+                {
+                    file.IsMissing = true;
+                }
+                else
+                {
+                    file.Hash = HashFile(FullPath(file)); 
+                }
+                // if soubor neexistuje
+                //      mark as moved
+                // else soubor existuje
+                //      if hash souboru != hash z db (= file.Hash)
+                //          ulož do databáze nový hash
+            } // TODO: renaming
+            _db.Files.UpdateRange(list);
         }
-        
+
 
         List<DirectoryModel> ListDirectoryDirectories(string path)
         {
