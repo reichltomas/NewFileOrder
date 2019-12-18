@@ -6,7 +6,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace NewFileOrder.Models
+namespace NewFileOrder.Models.Managers
 {
     class FileManager : Manager
     {
@@ -188,7 +188,12 @@ namespace NewFileOrder.Models
             var file = _db.Files.Where(b => b.Name == name).Where(a => a.IsMissing == false).Where(c => c.Path == path).First();
             file.Hash = HashFile(e.FullPath);
             file.LastChecked = DateTime.Now;
+        }
 
+
+        public List<FileModel> GetFilesWithTags(ICollection<TagModel> tags)
+        {
+            return _db.Files.Where(file => file.FileTags.All(filetag => tags.Contains(filetag.Tag))).ToList();
         }
     }
 }

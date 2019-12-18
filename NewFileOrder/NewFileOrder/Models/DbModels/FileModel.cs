@@ -6,7 +6,7 @@ using System.Text;
 
 namespace NewFileOrder.Models.DbModels
 {
-    class FileModel:IFileSystemEntry
+    public class FileModel:IFileSystemEntry
     {
         [Key]
         public int FileId { get; set; }
@@ -19,8 +19,7 @@ namespace NewFileOrder.Models.DbModels
         [Required]
         public DateTime LastChecked { get; set; }
         public string Metadata { get; set; }
-        [ForeignKey("TagKey")]
-        public virtual ICollection<TagModel> Tags { get; set; } 
+        public IList<FileTag> FileTags { get; set; } 
         public bool IsMissing { get; set; } = false;
 
     }

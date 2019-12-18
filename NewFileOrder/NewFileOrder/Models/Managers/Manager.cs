@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace NewFileOrder.Models
+namespace NewFileOrder.Models.Managers
 {
     class Manager
     {
