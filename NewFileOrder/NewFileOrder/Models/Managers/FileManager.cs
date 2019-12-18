@@ -117,7 +117,7 @@ namespace NewFileOrder.Models.Managers
 
         public List<FileModel> GetFilesWithTags(ICollection<TagModel> tags)
         {
-            return _db.Files.Where(file => file.Tags.All(tag => tags.Contains(tag))).ToList();
+            return _db.Files.Where(file => file.FileTags.All(filetag => tags.Contains(filetag.Tag))).ToList();
         }
     }
 }

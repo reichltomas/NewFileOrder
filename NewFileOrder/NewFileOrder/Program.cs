@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Avalonia;
 using Avalonia.Logging.Serilog;
@@ -34,7 +35,7 @@ namespace NewFileOrder
             {
                 // Create
                 Console.WriteLine("Insert");
-                db.Files.Add(new FileModel { LastChecked = DateTime.Now, Hash = ";asdjfl;aj;", Path = "C:/nani",Name="nevim" });
+                db.Files.Add(new FileModel { LastChecked = DateTime.Now, Hash = ";asdjfl;aj;", Path = "C:/nani", Name="nevim", FileTags = new List<FileTag>() });
                 db.SaveChanges();
 
                 // Read
@@ -46,11 +47,15 @@ namespace NewFileOrder
                 // Update
                 Console.WriteLine("Update");
                 file.Path = "C:/xd";
-                file.Tags.Add(
-                    new TagModel
-                    {
-                        Name = "kendr",
-                    });
+                if (file.FileTags == null)
+                    file.FileTags = new List<FileTag>();
+                file.FileTags.Add(
+                    new FileTag{
+                        File = file,
+                        Tag = new TagModel
+                        {
+                            Name = "kendr",
+                        } });
                 db.SaveChanges();
 
                 // Delete

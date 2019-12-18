@@ -10,6 +10,6 @@ namespace NewFileOrder.Models.DbModels
         public int TagId { get; set; }
         [Required]
         public string Name { get; set; }
-        public virtual ICollection<FileModel> Files { get; set; }
+        public IList<FileTag> FileTags { get; set; }
     }
 }
