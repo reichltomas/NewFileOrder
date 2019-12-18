@@ -11,9 +11,14 @@
   <DockPanel>
     <Menu DockPanel.Dock="Top">
       <MenuItem Header="_File">
-        <MenuItem Header="_Open..."/>
+        <MenuItem Header="Add file(s) to database..." IsEnabled="False" />
+        <MenuItem Header="Add directory to database..."/>
+          <!-- TODO open file chooser and pass chosen directory to FileManager.ListDirectoryFiles -->
+        <Separator/>
+        <MenuItem Header="Manage tags" />
         <Separator/>
         <MenuItem Header="_Exit"/>
+          <!-- TODO -->
       </MenuItem>
       <MenuItem Header="_Edit">
         <MenuItem Header="Copy"/>

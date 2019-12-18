@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NewFileOrder.Models.DbModels
 {
-    class TagModel
+    public class TagModel
     {
         [Key]
         public int TagId { get; set; }

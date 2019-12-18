@@ -60,7 +60,7 @@ namespace NewFileOrder
 
                 var window = new MainWindow
                 {
-                    DataContext = new MainWindowViewModel(),
+                    DataContext = new MainWindowViewModel(db),
                 };
                 app.Run(window);
             }

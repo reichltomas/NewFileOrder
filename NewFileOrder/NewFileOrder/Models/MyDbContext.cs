@@ -8,7 +8,7 @@ using NewFileOrder.Models.DbModels;
 
 namespace NewFileOrder.Models
 {
-    class MyDbContext : DbContext
+    public class MyDbContext : DbContext
 
     {
         public DbSet<FileModel> Files { get; set; }

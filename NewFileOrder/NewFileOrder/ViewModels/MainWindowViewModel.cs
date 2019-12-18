@@ -1,7 +1,10 @@
-﻿using NewFileOrder.Models.DbModels;
+﻿using NewFileOrder.Models;
+using NewFileOrder.Models.DbModels;
+using NewFileOrder.Models.Managers;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive;
 using System.Text;
 
@@ -9,6 +12,11 @@ namespace NewFileOrder.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
+        private MyDbContext _db;
+
+        private FileManager _fileManager;
+        private TagManager _tagManager;
+
         ViewModelBase content;
 
         public ViewModelBase Content
@@ -25,10 +33,9 @@ namespace NewFileOrder.ViewModels
             private set => this.RaiseAndSetIfChanged(ref searchPhrase, value);
         }
 
-        public ReactiveCommand<Unit, string[]> Seefwrwerarch;
-
-        public MainWindowViewModel()
+        public MainWindowViewModel(MyDbContext db)
         {
+            this._db = db;
             Content = new HomeViewModel();
         }
         
@@ -36,21 +43,40 @@ namespace NewFileOrder.ViewModels
         {
             string[] tags = SearchPhrase.Trim().ToLower().Split(' ');
 
+            ViewModelBase vm;
+
             if (tags.Length == 0)
             {
                 //show all
+                vm = SearchAndSubscribeToCommands(_db.Files.ToList());
             }
             else
             {
-                //check if all tags exist. if yes, show matching files. If not, show error
+                try
+                {
+                    vm = SearchAndSubscribeToCommands(_fileManager.GetFilesWithTags(_tagManager.GetTagsByName(tags)));
+                } catch (Exception e)
+                {
+                    vm = new ErrorViewModel(e.Message);
+                }
             }
-            //test code
-            // vidím VELK7 3PATN7
-            List<FileModel> x = new List<FileModel>();
-            foreach (string s in tags)
-                x.Add(new FileModel { Name = s });
-            Content = new SearchResultsViewModel(x);
+            Content = vm;
 
+        }
+
+        private ViewModelBase SearchAndSubscribeToCommands(List<FileModel> files)
+        {
+            SearchResultsViewModel vm = new SearchResultsViewModel(files);
+            vm.OpenFile.Subscribe((file) => OpenFile(file));
+
+            return vm;
+        }
+
+        public void OpenFile(FileModel file)
+        {
+            FileViewModel vm = new FileViewModel(file);
+            // here subscribe to commands
+            content = vm;
         }
     }
 }

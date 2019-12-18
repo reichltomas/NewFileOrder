@@ -6,12 +6,12 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace NewFileOrder.Models
+namespace NewFileOrder.Models.Managers
 {
     class FileManager : Manager
     {
         private SHA256 _hasher = SHA256.Create();
-        private List<FileWatcher> ;
+        // private List<FileWatcher> ;
 
         private string FullPath(FileModel fm)
         {
@@ -114,6 +114,11 @@ namespace NewFileOrder.Models
             return BitConverter.ToString(_hasher.Hash);
         }
 
+
+        public List<FileModel> GetFilesWithTags(ICollection<TagModel> tags)
+        {
+            return _db.Files.Where(file => file.Tags.All(tag => tags.Contains(tag))).ToList();
+        }
     }
 }
 
