@@ -6,7 +6,10 @@
              x:Class="NewFileOrder.Views.ErrorView">
   <StackPanel Orientation="Vertical">
     <StackPanel Orientation="Horizontal">
-      <Image Source="/Assets/img/error.png" Width="32" Height="32"/>
+      <!--
+      <Image Source="avares://NewFileOrder/Assets/img/error.png" Width="32" Height="32"/>
+      TODO fix it 
+      -->
       <TextBlock>Nastala chyba!</TextBlock>
     </StackPanel>
     <TextBlock Text="{Binding ErrorMessage}" />

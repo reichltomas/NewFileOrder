@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using ReactiveUI;
+using System.Diagnostics;
 
 namespace NewFileOrder.ViewModels
 {
@@ -18,6 +19,17 @@ namespace NewFileOrder.ViewModels
         public FileViewModel (FileModel file)
         {
             File = file;
+        }
+
+        public void Open()
+        {
+            new Process
+            {
+                StartInfo = new ProcessStartInfo($"{file.Path}/{file.Name}")
+                {
+                    UseShellExecute = true
+                }
+            }.Start();
         }
     }
 }

@@ -27,7 +27,7 @@ namespace NewFileOrder.Models.Managers
 
         public FileManager(MyDbContext dbContext) : base(dbContext)
         {
-            WatchRoots();
+            // WatchRoots(); TODO uncomment
         }
         void UpdateFileModels(string path)
         {
@@ -139,7 +139,7 @@ namespace NewFileOrder.Models.Managers
 
             }
         }
-        //        WARNING UNTESTED CODE, MIGHT BREAK EVERYTHING
+        //        WARNING UNTESTED CODE, MIGHT BREAK EVERYTHING 
         private void OnRenamed(object sender, RenamedEventArgs e)
         {
             var oname = e.OldName;

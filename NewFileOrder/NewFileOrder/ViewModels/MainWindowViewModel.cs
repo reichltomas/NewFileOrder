@@ -25,7 +25,7 @@ namespace NewFileOrder.ViewModels
             private set => this.RaiseAndSetIfChanged(ref content, value);
         }
 
-        string searchPhrase;
+        string searchPhrase = "";
 
         public string SearchPhrase
         {
@@ -37,11 +37,16 @@ namespace NewFileOrder.ViewModels
         {
             this._db = db;
             Content = new HomeViewModel();
+
+            _fileManager = new FileManager(_db);
+            _tagManager = new TagManager(_db);
         }
         
         public void Search()
         {
             string[] tags = SearchPhrase.Trim().ToLower().Split(' ');
+
+            Console.WriteLine(tags);
 
             ViewModelBase vm;
 
@@ -52,13 +57,15 @@ namespace NewFileOrder.ViewModels
             }
             else
             {
-                try
+                vm = SearchAndSubscribeToCommands(_fileManager.GetFilesWithTags(_tagManager.GetTagsByName(tags)));
+
+                /*try
                 {
                     vm = SearchAndSubscribeToCommands(_fileManager.GetFilesWithTags(_tagManager.GetTagsByName(tags)));
                 } catch (Exception e)
                 {
                     vm = new ErrorViewModel(e.Message);
-                }
+                }*/
             }
             Content = vm;
 
@@ -75,7 +82,7 @@ namespace NewFileOrder.ViewModels
         public void OpenFile(FileModel file)
         {
             FileViewModel vm = new FileViewModel(file);
-            // here subscribe to commands
+            // here subscribe to commands (if any)
             content = vm;
         }
     }
