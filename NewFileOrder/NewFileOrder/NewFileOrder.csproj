@@ -13,10 +13,6 @@
       <SubType>Designer</SubType>
     </AvaloniaResource>
     <AvaloniaResource Include="Assets\*" />
-    <AvaloniaResource Remove="Migrations\**" />
-    <Compile Remove="Migrations\**" />
-    <EmbeddedResource Remove="Migrations\**" />
-    <None Remove="Migrations\**" />
     <Folder Include="Services\" />
   </ItemGroup>
   <ItemGroup>
@@ -30,11 +26,6 @@
     <None Remove="Views\HomeView.xaml" />
     <None Remove="Views\SearchBoxView.xaml" />
     <None Remove="Views\SearchResultsView.xaml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Migrations\20191216090958_mmm.cs" />
-    <Compile Include="Migrations\20191216090958_mmm.designer.cs" />
-    <Compile Include="Migrations\MyDbContextModelSnapshot.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.8.3" />
