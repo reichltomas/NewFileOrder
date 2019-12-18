@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace NewFileOrder.Models.DbModels
 {
@@ -11,6 +10,6 @@ namespace NewFileOrder.Models.DbModels
         public int TagId { get; set; }
         [Required]
         public string Name { get; set; }
-
+        public virtual ICollection<FileModel> Files { get; set; }
     }
 }

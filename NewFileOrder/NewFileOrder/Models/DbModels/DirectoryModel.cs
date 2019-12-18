@@ -14,10 +14,10 @@ namespace NewFileOrder.Models.DbModels
         
         [Required]
         public string Path { get; set; }
-        public List<FileModel> Files { get; set; } = new List<FileModel>();
-        public List<TagModel> Tags { get; set; } = new List<TagModel>();
+        public virtual ICollection<FileModel> Files { get; set; }
+        //public List<TagModel> Tags { get; set; } = new List<TagModel>();
         public List<DirectoryModel> Directories { get; set; } = new List<DirectoryModel>();
         [Required]
-        public string DirHash { get; set; }
+        public string Hash { get; set; }
     }
 }

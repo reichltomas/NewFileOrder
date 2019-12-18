@@ -11,7 +11,7 @@ namespace NewFileOrder.Models
     class FileManager : Manager
     {
         private SHA256 _hasher = SHA256.Create();
-
+        private List<FileWatcher> ;
 
         private string FullPath(FileModel fm)
         {
@@ -25,9 +25,12 @@ namespace NewFileOrder.Models
 
         public FileManager(MyDbContext dbContext):base(dbContext)
         {
+
         }
-
-
+        void UpdateFileModels(string path) 
+        {
+        
+        }
         List<FileModel> ListDirectoryFiles(string path)
         {
             List<FileModel> filesList = new List<FileModel>();
@@ -36,7 +39,6 @@ namespace NewFileOrder.Models
             {
                 var name = filepath.Substring(path.Length + 1);
                 var hash = HashFile(filepath);
-
                 filesList.Add(new FileModel { LastChecked = DateTime.Now, Name = name, Path = path, Hash = hash });
                 //TODO code for pseudotag
             }
@@ -88,7 +90,7 @@ namespace NewFileOrder.Models
         public string HashDirectory(string path)
         {
             // assuming you want to include nested folders
-            var files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories)
+            var files = Directory.GetFiles(path, "*", SearchOption.AllDirectories)
                                  .OrderBy(p => p).ToList();
 
 
