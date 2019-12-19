@@ -27,12 +27,53 @@ namespace NewFileOrder.Models.Managers
 
         public FileManager(MyDbContext dbContext) : base(dbContext)
         {
-            // WatchRoots(); TODO uncomment
+            Cleanup();
+            WatchRoots();
         }
+        public void AddRoot(string path)
+        {
+            var hash = HashDirectory(path);
+            path = path.Replace('\\', '/');
+            var name = path.Split('/').Last();
+            //-1 to not include /
+            var pth = path.Substring(0, path.Length - name.Length - 1);
+            //Console.WriteLine()
+            var files = ListFiles(path);
+            PutFilesInDatabase(files);
+            var dir = new DirectoryModel { IsRoot = true, Path = pth, Name = name, Hash = HashDirectory(path), };
+            PutDirectoryInDB(dir);
+            WatchRoots();
+        }
+
+        private void PutDirectoryInDB(DirectoryModel dir)
+        {
+            _db.Directories.Add(dir);
+            _db.SaveChanges();
+        }
+
         void UpdateFileModels(string path)
         {
 
         }
+        //ez and dumb
+        List<FileModel> ListFiles(string path)
+        {
+            var files = Directory.GetFiles(path, "*", SearchOption.AllDirectories)
+                                 .ToList();
+
+            List<FileModel> filesList = new List<FileModel>();
+            foreach (var filepath in files)
+            {
+                //filepath = filepath.Replace(@"\\", "/");
+                var name = filepath.Replace("\\", "/").Split('/').Last();
+                var fpath = filepath.Substring(0, filepath.Length - name.Length - 1);
+                var hash = HashFile(filepath);
+                filesList.Add(new FileModel { LastChecked = DateTime.Now, Name = name, Path = fpath, Hash = hash });
+                //TODO code for pseudotag
+            }
+            return filesList;
+        }
+        //hard way with directories
         List<FileModel> ListDirectoryFiles(string path)
         {
             List<FileModel> filesList = new List<FileModel>();
@@ -58,7 +99,7 @@ namespace NewFileOrder.Models.Managers
         }
 
         //TODO check files when restarted
-        /*void UpdateFilesInDatabase(List<FileModel> list)
+        /*void CheckAfterRestart(List<FileModel> list)
         {
             foreach (FileModel file in list)
             {
@@ -80,22 +121,23 @@ namespace NewFileOrder.Models.Managers
             _db.Files.UpdateRange(list);
         }*/
 
-
+        //todo někdy recursively
         List<DirectoryModel> ListDirectoryDirectories(string path)
         {
             Directory.GetDirectories(path);
+
             return null;
         }
         string HashFile(string path)
         {
             using (var file = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                var hash = _hasher.ComputeHash(file);
-                var hashString = Convert.ToBase64String(hash);
-                if (hashString == "")
-                    return Convert.ToBase64String(_hasher.ComputeHash(Encoding.UTF8.GetBytes(path)));
-                ;
-                return hashString;
+
+                var hash = Convert.ToBase64String(_hasher.ComputeHash(file));//+Convert.ToBase64String(_hasher.ComputeHash(Encoding.UTF8.GetBytes(path)));
+                                                                             // if (hash== "")
+                                                                             //    return Convert.ToBase64String(_hasher.ComputeHash(Encoding.UTF8.GetBytes(path)));
+
+                return hash;
             }
         }
 
@@ -128,19 +170,25 @@ namespace NewFileOrder.Models.Managers
 
         private void WatchRoots()
         {
-            var roots = _db.Directories.Where(t => t.IsRoot).ToList();
+            if (_fileWatchers != null)
+            {
+                foreach (var f in _fileWatchers)
+                    f.Dispose();
+            }
+            var roots = _db.Directories.Where(t => t.IsRoot == true).ToList();
             foreach (var root in roots)
             {
                 var fsw = new FileSystemWatcher(FullPath(root));
-                fsw.Changed += OnChanged;
-                fsw.Created += OnCreated;
-                fsw.Deleted += OnDeleted;
-                fsw.Renamed += OnRenamed;
+                fsw.EnableRaisingEvents = true;
+                fsw.Changed += new FileSystemEventHandler(OnChanged);
+                fsw.Created += new FileSystemEventHandler(OnCreated);
+                fsw.Deleted += new FileSystemEventHandler(OnDeleted);
+                fsw.Renamed += new RenamedEventHandler(OnRenamed);
 
             }
         }
         //        WARNING UNTESTED CODE, MIGHT BREAK EVERYTHING 
-        private void OnRenamed(object sender, RenamedEventArgs e)
+        public void OnRenamed(object sender, RenamedEventArgs e)
         {
             var oname = e.OldName;
             var nname = e.Name;
@@ -152,22 +200,24 @@ namespace NewFileOrder.Models.Managers
             UpdateFileInDatabase(file);
         }
 
-        private void OnDeleted(object sender, FileSystemEventArgs e)
+        public void OnDeleted(object sender, FileSystemEventArgs e)
         {
             var name = e.Name;
             //needs testing
-            var path = e.FullPath.Substring(0, e.FullPath.Length - name.Length);
-            var file = _db.Files.Where(b => b.Name == name).Where(a => a.IsMissing == false).Where(c => c.Path == path).First();
+            var path = e.FullPath.Substring(0, e.FullPath.Length - name.Length).Trim('\\');
+            var file = _db.Files.Where(b => b.Name == name).Where(a => a.IsMissing == false).Where(c => c.Path == path).FirstOrDefault();
             //DeleteFileFromDB(file);
             file.IsMissing = true;
             UpdateFileInDatabase(file);
         }
 
-        private void OnCreated(object sender, FileSystemEventArgs e)
+        public void OnCreated(object sender, FileSystemEventArgs e)
         {
+            if (File.GetAttributes(e.FullPath).HasFlag(FileAttributes.Directory))
+                return; //ignore directories, only process files
             var path = e.FullPath;
             var name = e.Name;
-            var file = _db.Files.Where(a => a.IsMissing == true).Where(b => b.Hash == HashFile(path)).First();
+            FileModel file = _db.Files.Where(a => a.IsMissing == true).Where(b => b.Hash == HashFile(path)).FirstOrDefault();
             if (file == null)
             {
                 file = new FileModel { Hash = HashFile(path), Name = name, Path = path, LastChecked = DateTime.Now };
@@ -181,19 +231,37 @@ namespace NewFileOrder.Models.Managers
             }
         }
 
-        private void OnChanged(object sender, FileSystemEventArgs e)
+        public void OnChanged(object sender, FileSystemEventArgs e)
         {
             var name = e.Name;
-            var path = e.FullPath.Substring(0, e.FullPath.Length - name.Length);
-            var file = _db.Files.Where(b => b.Name == name).Where(a => a.IsMissing == false).Where(c => c.Path == path).First();
-            file.Hash = HashFile(e.FullPath);
-            file.LastChecked = DateTime.Now;
+            var path = e.FullPath.Substring(0, e.FullPath.Length - name.Length).Trim('\\');
+            var file = _db.Files.Where(b => b.Name == name).Where(a => a.IsMissing == false).Where(c => c.Path == path).FirstOrDefault();
+            if (file != null)
+            {
+                file.Hash = HashFile(e.FullPath);
+                file.LastChecked = DateTime.Now;
+                PutFileInDB(file);
+            }
         }
 
 
         public List<FileModel> GetFilesWithTags(ICollection<TagModel> tags)
         {
             return _db.Files.Where(file => file.FileTags.All(filetag => tags.Contains(filetag.Tag))).ToList();
+        }
+        private void Cleanup()
+        {
+            if (_fileWatchers == null)
+                goto kys;
+            foreach (var f in _fileWatchers)
+            {
+                f.Dispose();
+            }
+            kys:
+            _db.Files.RemoveRange(_db.Files);
+            _db.Directories.RemoveRange(_db.Directories);
+            _db.FileTags.RemoveRange(_db.FileTags);
+            _db.SaveChanges();
         }
     }
 }

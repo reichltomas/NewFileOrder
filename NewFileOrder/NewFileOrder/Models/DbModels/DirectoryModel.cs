@@ -19,6 +19,6 @@ namespace NewFileOrder.Models.DbModels
         public List<DirectoryModel> Directories { get; set; } = new List<DirectoryModel>();
         [Required]
         public string Hash { get; set; }
-        public bool IsRoot { get; set; }
+        public bool IsRoot { get; set; } = false;
     }
 }

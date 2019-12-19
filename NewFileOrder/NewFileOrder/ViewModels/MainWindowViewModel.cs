@@ -39,6 +39,7 @@ namespace NewFileOrder.ViewModels
             Content = new HomeViewModel();
 
             _fileManager = new FileManager(_db);
+            _fileManager.AddRoot("C:/Users/janpr/Desktop/testdir");
             _tagManager = new TagManager(_db);
         }
         
