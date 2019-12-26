@@ -30,35 +30,31 @@ namespace NewFileOrder.Models.Managers
 
         public FileManager(MyDbContext dbContext) : base(dbContext)
         {
-            Cleanup();
-
-            Task t = new Task(() => { while (true) { Watch(); Thread.Sleep(5000); } });
+            //Cleanup();
+            Task t = new Task(async () => { while (true) { Thread.Sleep(5000); await Watch(); } });
             t.Start();
         }
         public async void AddRoot(string path)
         {
             var hash = HashDirectory(path);
-            path = path.Replace('\\', '/');
+            path = path.Replace("\\", "/");
             var name = path.Split('/').Last();
             //-1 to not include /
             var pth = path.Substring(0, path.Length - name.Length - 1);
             //Console.WriteLine()
             var files = ListFiles(path);
-            PutFilesInDB(files);
+            await PutFilesInDB(files);
             var dir = new DirectoryModel { IsRoot = true, Path = pth, Name = name, Hash = HashDirectory(path), };
-            PutDirectoryInDB(dir);
+            await PutDirectoryInDB(dir);
 
         }
 
-        private async void PutDirectoryInDB(DirectoryModel dir)
+        private async
+        Task
+PutDirectoryInDB(DirectoryModel dir)
         {
             _db.Directories.Add(dir);
             await _db.SaveChangesAsync();
-        }
-
-        void UpdateFileModels(string path)
-        {
-
         }
         //ez and dumb
         List<FileModel> ListFiles(string path)
@@ -69,8 +65,9 @@ namespace NewFileOrder.Models.Managers
             List<FileModel> filesList = new List<FileModel>();
             foreach (var filepath in files)
             {
-                var name = filepath.Replace("\\", "/").Split('/').Last();
-                var fpath = filepath.Substring(0, filepath.Length - name.Length - 1);
+                var fp = filepath.Replace("\\", "/");
+                var name = fp.Split('/').Last();
+                var fpath = fp.Substring(0, fp.Length - name.Length - 1);
                 var hash = HashFile(filepath);
                 filesList.Add(new FileModel
                 {
@@ -98,20 +95,22 @@ namespace NewFileOrder.Models.Managers
             }
             return filesList;
         }
-        void PutFilesInDB(List<FileModel> list)
+        async Task
+PutFilesInDB(List<FileModel> list)
         {
             _db.Files.AddRange(list);
-            _db.SaveChangesAsync();
+            await _db.SaveChangesAsync();
         }
-        void UpdateFileInDB(FileModel file)
+        async void UpdateFileInDB(FileModel file)
         {
             _db.Files.Update(file);
-            _db.SaveChangesAsync();
+            await _db.SaveChangesAsync();
         }
-        void UpdateFilesInDB(List<FileModel> files)
+        async Task
+       UpdateFilesInDB(List<FileModel> files)
         {
             _db.Files.UpdateRange(files);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
 
         //TODO check files when restarted
@@ -185,7 +184,9 @@ namespace NewFileOrder.Models.Managers
             return BitConverter.ToString(_hasher.Hash);
         }
 
-        private async void Watch()
+        private async
+        Task
+Watch()
         {
             var realFiles = new List<FileModel>();
             var roots = await _db.Directories.Where(t => t.IsRoot == true).ToListAsync();
@@ -198,6 +199,7 @@ namespace NewFileOrder.Models.Managers
             var newFiles = new List<FileModel>();
             foreach (var realFile in realFiles)
             {
+                realFile.Path = realFile.Path.Replace("\\", "/");
                 //nothing happened or file was found
                 var dbFile = dbFiles.Where(a => a.Name == realFile.Name).Where(b => b.Path == realFile.Path).Where(c => c.Hash == realFile.Hash).FirstOrDefault();
                 if (dbFile != null)
@@ -207,7 +209,8 @@ namespace NewFileOrder.Models.Managers
                     continue;
                 }
                 //rename in same directory,todo validate emptyfile
-                dbFile = dbFiles.Where(a => a.Name != realFile.Name).Where(b => b.Path == realFile.Path).Where(c => c.Hash == realFile.Hash).FirstOrDefault();
+                dbFile = dbFiles.Where(a => a.Name != realFile.Name).Where(b => b.Path == realFile.Path
+).Where(c => c.Hash == realFile.Hash).Where(d => d.Created == realFile.Created).FirstOrDefault();
                 if (dbFile != null)
                 {
                     dbFile.Name = realFile.Name;
@@ -216,7 +219,7 @@ namespace NewFileOrder.Models.Managers
                     continue;
                 }
                 //move, todo same files in 2 directories
-                dbFile = dbFiles.Where(a => a.Name == realFile.Name).Where(b => b.Path != realFile.Path).Where(x=>x.Created ==realFile.Created).Where(c => c.Hash == realFile.Hash).FirstOrDefault();
+                dbFile = dbFiles.Where(a => a.Name == realFile.Name).Where(b => b.Path != realFile.Path).Where(x => x.Created == realFile.Created).Where(c => c.Hash == realFile.Hash).FirstOrDefault();
                 if (dbFile != null)
                 {
                     dbFile.Path = realFile.Path;
@@ -229,6 +232,7 @@ namespace NewFileOrder.Models.Managers
                 if (dbFile != null)
                 {
                     dbFile.Path = realFile.Path;
+                    ;
                     dbFile.IsMissing = false;
                     dbFile.LastChecked = realFile.LastChecked;
                     continue;
@@ -240,8 +244,8 @@ namespace NewFileOrder.Models.Managers
             {
                 f.IsMissing = true;
             }
-            UpdateFilesInDB(dbFiles);
-            PutFilesInDB(newFiles);
+            await UpdateFilesInDB(dbFiles);
+            await PutFilesInDB(newFiles);
 
         }
         /*
@@ -303,14 +307,14 @@ namespace NewFileOrder.Models.Managers
         {
             return _db.Files.Where(file => file.FileTags.All(filetag => tags.Contains(filetag.Tag))).ToList();
         }
-        private void Cleanup()
+        async private void Cleanup()
         {
             try
             {
                 _db.Files.RemoveRange(_db.Files);
                 _db.Directories.RemoveRange(_db.Directories);
                 _db.FileTags.RemoveRange(_db.FileTags);
-                _db.SaveChangesAsync();
+                await _db.SaveChangesAsync();
             }
             catch { }
         }

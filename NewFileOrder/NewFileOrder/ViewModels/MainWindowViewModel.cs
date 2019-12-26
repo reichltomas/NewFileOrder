@@ -40,13 +40,14 @@ namespace NewFileOrder.ViewModels
             Content = new HomeViewModel();
 
             _fileManager = new FileManager(_db);
-            Thread.Sleep(500);
+            Thread.Sleep(5500);
             _fileManager.AddRoot("C:/Users/janpr/Desktop/testdir");
             _tagManager = new TagManager(_db);
         }
         
         public void Search()
         {
+            
             string[] tags = SearchPhrase.Trim().ToLower().Split(' ');
 
             Console.WriteLine(tags);
