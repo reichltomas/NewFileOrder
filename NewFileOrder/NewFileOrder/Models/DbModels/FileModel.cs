@@ -18,6 +18,8 @@ namespace NewFileOrder.Models.DbModels
         public string Hash { get; set; }
         [Required]
         public DateTime LastChecked { get; set; }
+        [Required]
+        public DateTime Created { get; set; }
         public string Metadata { get; set; }
         public IList<FileTag> FileTags { get; set; } 
         public bool IsMissing { get; set; } = false;

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Text;
+using System.Threading;
 
 namespace NewFileOrder.ViewModels
 {
@@ -39,6 +40,7 @@ namespace NewFileOrder.ViewModels
             Content = new HomeViewModel();
 
             _fileManager = new FileManager(_db);
+            Thread.Sleep(500);
             _fileManager.AddRoot("C:/Users/janpr/Desktop/testdir");
             _tagManager = new TagManager(_db);
         }
