@@ -4,6 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="NewFileOrder.Views.FileView">
-  <Button Content="{Binding File.Name}" Command="{Binding Open}"/>
+  <StackPanel>
+    <TextBlock Text="{Binding File.Name}" />
+    <Button Command="{Binding Open}">Open file</Button>
+  </StackPanel>
   
 </UserControl>

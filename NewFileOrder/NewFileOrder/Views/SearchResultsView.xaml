@@ -4,23 +4,28 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="NewFileOrder.Views.SearchResultsView">
-  
-  <ItemsControl Items="{Binding Results}">
-    <ItemsControl.ItemTemplate>
-      <DataTemplate>
-        <Button Width="160" Height="160"
-                Command="{Binding $parent[ItemsControl].DataContext.OpenFile}"
-                CommandParameter="{Binding .}">
-          <DockPanel>
-            <TextBlock DockPanel.Dock="Bottom" Text="{Binding Name}" />
-          </DockPanel>
-        </Button>
-      </DataTemplate>
-    </ItemsControl.ItemTemplate>
-    <ItemsControl.ItemsPanel>
-      <ItemsPanelTemplate>
-        <WrapPanel Orientation="Horizontal" />
-      </ItemsPanelTemplate>
-    </ItemsControl.ItemsPanel>
-  </ItemsControl>
+  <DockPanel>
+    <ScrollViewer VerticalContentAlignment="Top"
+                  HorizontalContentAlignment="Left"
+                  HorizontalScrollBarVisibility="Disabled" 
+                  DockPanel.Dock="Right" />
+    <ItemsControl Items="{Binding Results}">
+      <ItemsControl.ItemTemplate>
+        <DataTemplate>
+          <Button Width="160" Height="160"
+                  Command="{Binding $parent[ItemsControl].DataContext.OpenFile}"
+                  CommandParameter="{Binding .}">
+            <DockPanel>
+              <TextBlock DockPanel.Dock="Bottom" Text="{Binding Name}" />
+            </DockPanel>
+          </Button>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <WrapPanel Orientation="Horizontal" />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+    </ItemsControl>
+  </DockPanel>
 </UserControl>

@@ -5,8 +5,6 @@ using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
-using System.Text;
 using System.Threading;
 
 namespace NewFileOrder.ViewModels
@@ -41,7 +39,7 @@ namespace NewFileOrder.ViewModels
 
             _fileManager = new FileManager(_db);
             Thread.Sleep(5500);
-            _fileManager.AddRoot("C:/Users/janpr/Desktop/csharp");
+            _fileManager.AddRoot("C:/Test");
             _tagManager = new TagManager(_db);
         }
         

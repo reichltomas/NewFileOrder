@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Logging.Serilog;
-using DynamicData;
 using NewFileOrder.Models;
-using NewFileOrder.Models.DbModels;
 using NewFileOrder.ViewModels;
 using NewFileOrder.Views;
-using Microsoft.EntityFrameworkCore;
+using Avalonia.ReactiveUI;
+using Avalonia.Controls;
 
 namespace NewFileOrder
 {
