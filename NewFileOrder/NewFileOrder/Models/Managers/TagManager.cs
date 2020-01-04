@@ -1,4 +1,5 @@
-﻿using NewFileOrder.Models.DbModels;
+﻿using Microsoft.EntityFrameworkCore;
+using NewFileOrder.Models.DbModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace NewFileOrder.Models.Managers
 
             foreach (string name in names)
             {
-                var tm = _db.Tags.Where(t => t.Name.Equals(name));
+                var tm = _db.Tags.Include(t => t.FileTags).Where(t => t.Name.Equals(name));
                 if(tm.Count() == 1)
                     tags.Add(tm.First());
                 else
@@ -32,6 +33,15 @@ namespace NewFileOrder.Models.Managers
             }
             if (!allTagsExist)
                 throw new Exception(errMsg.ToString());
+            return tags;
+        }
+
+        public List<TagModel> GetTagsFromFileTags(ICollection<FileTag> fileTags)
+        {
+            List<TagModel> tags = new List<TagModel>();
+
+            foreach (FileTag ft in fileTags)
+                tags.Add(ft.Tag);
             return tags;
         }
     }

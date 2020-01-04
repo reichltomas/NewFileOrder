@@ -8,6 +8,7 @@ using NewFileOrder.Models;
 using NewFileOrder.Models.DbModels;
 using NewFileOrder.ViewModels;
 using NewFileOrder.Views;
+using Microsoft.EntityFrameworkCore;
 
 namespace NewFileOrder
 {
@@ -94,7 +95,6 @@ namespace NewFileOrder
                     db.Files.Add(f);
                 }
                 db.SaveChanges();
-                */
 
                 /*
                 var testFile = new FileModel { Name = "kedr.txt", Path = "C:/Users/JanPro/Desktop/kys", Hash = "asjklhuTZU34567", LastChecked = DateTime.Now, Metadata = "", IsMissing = false};
@@ -112,6 +112,28 @@ namespace NewFileOrder
                 db.Files.Add(testFile);
                 db.SaveChanges();
                 */
+                /*
+                var file = db.Files.Include(f => f.FileTags).First();
+
+                file.FileTags.Add(new FileTag { File = file, Tag = db.Tags.First() });
+
+                db.Files.Update(file);
+                db.SaveChanges();
+                */
+
+                var file = db.Files.Include(f => f.FileTags).First();
+                var tag = db.Tags.First();
+                
+                /*file.FileTags.Add(new FileTag
+                {
+                    File = file,
+                    Tag = tag
+                });*/
+                db.SaveChanges();
+
+                var fileCheck = db.Files.Include(f => f.FileTags).Single(f => f.FileId == file.FileId);
+                var tagCheck = db.Tags.Include(t => t.FileTags).Single(t => t.TagId == tag.TagId);
+
                 var window = new MainWindow
                 {
                     DataContext = new MainWindowViewModel(db),

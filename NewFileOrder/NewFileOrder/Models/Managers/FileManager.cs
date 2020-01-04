@@ -305,8 +305,27 @@ Watch()
 
         public List<FileModel> GetFilesWithTags(ICollection<TagModel> tags)
         {
-            return _db.Files.Where(file => file.FileTags.All(filetag => tags.Contains(filetag.Tag))).ToList();
+            HashSet<FileModel> files = new HashSet<FileModel>(GetFilesFromFileTags(tags.First().FileTags));
+
+            foreach (var tag in tags.Skip(1))
+            {
+                files.IntersectWith(GetFilesFromFileTags(tag.FileTags));
+            }
+            if (files.Count == 0)
+                throw new Exception("Nenalezen soubor, který by obsahoval všechny tagy");
+
+            return files.ToList();
         }
+
+        public List<FileModel> GetFilesFromFileTags(ICollection<FileTag> fileTags)
+        {
+            List<FileModel> files = new List<FileModel>();
+
+            foreach (FileTag ft in fileTags)
+                files.Add(ft.File);
+            return files;
+        }
+
         async private void Cleanup()
         {
             try

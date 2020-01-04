@@ -21,7 +21,7 @@ namespace NewFileOrder.ViewModels
         public SearchResultsViewModel(List<FileModel> results)
         {
             Results = results;
-            OpenFile = ReactiveCommand.Create<FileModel, FileModel>((file) => file);
+            OpenFile = ReactiveCommand.Create<FileModel, FileModel>((file) => file); 
         }
     }
 }

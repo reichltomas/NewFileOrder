@@ -41,35 +41,31 @@ namespace NewFileOrder.ViewModels
 
             _fileManager = new FileManager(_db);
             Thread.Sleep(5500);
-            _fileManager.AddRoot("C:/Users/janpr/Desktop/testdir");
+            //_fileManager.AddRoot("C:/Users/janpr/Desktop/testdir");
             _tagManager = new TagManager(_db);
         }
         
         public void Search()
         {
             
-            string[] tags = SearchPhrase.Trim().ToLower().Split(' ');
-
-            Console.WriteLine(tags);
+            string search = SearchPhrase.Trim().ToLower();
 
             ViewModelBase vm;
 
-            if (tags.Length == 0)
+            if (search.Length == 0)
             {
                 //show all
                 vm = SearchAndSubscribeToCommands(_db.Files.ToList());
             }
             else
             {
-                vm = SearchAndSubscribeToCommands(_fileManager.GetFilesWithTags(_tagManager.GetTagsByName(tags)));
-
-                /*try
+                try
                 {
-                    vm = SearchAndSubscribeToCommands(_fileManager.GetFilesWithTags(_tagManager.GetTagsByName(tags)));
+                    vm = SearchAndSubscribeToCommands(_fileManager.GetFilesWithTags(_tagManager.GetTagsByName(search.Split(' '))));
                 } catch (Exception e)
                 {
                     vm = new ErrorViewModel(e.Message);
-                }*/
+                }
             }
             Content = vm;
 

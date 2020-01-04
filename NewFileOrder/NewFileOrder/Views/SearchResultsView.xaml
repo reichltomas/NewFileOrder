@@ -4,19 +4,23 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="NewFileOrder.Views.SearchResultsView">
-  <WrapPanel Orientation="Horizontal" Background="Aqua">
-    <ItemsControl Items="{Binding Results}">
-      <ItemsControl.ItemTemplate>
-        <DataTemplate>
-          <Button Width="160" Height="160"
-                  Command="{Binding OpenFile}"
-                  CommandParameter="{Binding .}">
-            <DockPanel>
-              <TextBlock DockPanel.Dock="Bottom" Text="{Binding Name}" />
-            </DockPanel>
-          </Button>
-        </DataTemplate>
-      </ItemsControl.ItemTemplate>
-    </ItemsControl>
-  </WrapPanel>
+  
+  <ItemsControl Items="{Binding Results}">
+    <ItemsControl.ItemTemplate>
+      <DataTemplate>
+        <Button Width="160" Height="160"
+                Command="{Binding OpenFile}"
+                CommandParameter="{Binding .}">
+          <DockPanel>
+            <TextBlock DockPanel.Dock="Bottom" Text="{Binding Name}" />
+          </DockPanel>
+        </Button>
+      </DataTemplate>
+    </ItemsControl.ItemTemplate>
+    <ItemsControl.ItemsPanel>
+      <ItemsPanelTemplate>
+        <WrapPanel Orientation="Horizontal" />
+      </ItemsPanelTemplate>
+    </ItemsControl.ItemsPanel>
+  </ItemsControl>
 </UserControl>
