@@ -30,8 +30,15 @@ namespace NewFileOrder.Models.Managers
 
         public FileManager(MyDbContext dbContext) : base(dbContext)
         {
-            //Cleanup();
-            Task t = new Task(async () => { while (true) { Thread.Sleep(5000); await Watch(); } });
+            Cleanup();
+            Task t = new Task(async () =>
+            {
+                while (true)
+                {
+                    Thread.Sleep(5000);
+                    await Watch();
+                }
+            });
             t.Start();
         }
         public async void AddRoot(string path)
@@ -149,11 +156,18 @@ PutFilesInDB(List<FileModel> list)
             {
                 return HASH_OF_EMPTY_FILE;
             }
-            using (var file = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+            try
             {
+                using (var file = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
 
-                return Convert.ToBase64String(_hasher.ComputeHash(file));
+                    return Convert.ToBase64String(_hasher.ComputeHash(file));
 
+                }
+            }
+            catch (System.IO.IOException)
+            {/*file is open or something*/
+                return HASH_OF_EMPTY_FILE;
             }
         }
 
@@ -174,19 +188,22 @@ PutFilesInDB(List<FileModel> list)
                 _hasher.TransformBlock(pathBytes, 0, pathBytes.Length, pathBytes, 0);
 
                 // hash contents
-                byte[] contentBytes = File.ReadAllBytes(file);
-                if (i == files.Count - 1)
-                    _hasher.TransformFinalBlock(contentBytes, 0, contentBytes.Length);
-                else
-                    _hasher.TransformBlock(contentBytes, 0, contentBytes.Length, contentBytes, 0);
+                try
+                {
+                    byte[] contentBytes = File.ReadAllBytes(file);
+                    if (i == files.Count - 1)
+                        _hasher.TransformFinalBlock(contentBytes, 0, contentBytes.Length);
+                    else
+                        _hasher.TransformBlock(contentBytes, 0, contentBytes.Length, contentBytes, 0);
+                }
+                catch (System.IO.IOException) {/*file is open or something*/}
+
             }
 
             return BitConverter.ToString(_hasher.Hash);
         }
 
-        private async
-        Task
-Watch()
+        private async Task Watch()
         {
             var realFiles = new List<FileModel>();
             var roots = await _db.Directories.Where(t => t.IsRoot == true).ToListAsync();
@@ -228,7 +245,7 @@ Watch()
                     continue;
                 }
                 //changed
-                dbFile = dbFiles.Where(a => a.Name == realFile.Name).Where(b => b.Path != realFile.Path).Where(c => c.Hash == realFile.Hash).FirstOrDefault();
+                    dbFile = dbFiles.Where(a => a.Name == realFile.Name).Where(b => b.Path != realFile.Path).Where(c => c.Hash == realFile.Hash).FirstOrDefault();
                 if (dbFile != null)
                 {
                     dbFile.Path = realFile.Path;
@@ -305,7 +322,7 @@ Watch()
 
         public List<FileModel> GetFilesWithTags(ICollection<TagModel> tags)
         {
-            HashSet<FileModel> files = new HashSet<FileModel>(GetFilesFromFileTags(tags.First().FileTags));
+            HashSet<FileModel> files = new HashSet<FileModel>(GetFilesFromFileTags(tags.First().FileTags).Where(a => a.IsMissing == false));
 
             foreach (var tag in tags.Skip(1))
             {
@@ -314,7 +331,7 @@ Watch()
             if (files.Count == 0)
                 throw new Exception("Nenalezen soubor, který by obsahoval všechny tagy");
 
-            return files.ToList();
+            return files.ToList().OrderBy(a=>a.Name).ToList();
         }
 
         public List<FileModel> GetFilesFromFileTags(ICollection<FileTag> fileTags)

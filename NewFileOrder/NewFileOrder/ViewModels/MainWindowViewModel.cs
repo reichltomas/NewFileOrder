@@ -41,7 +41,7 @@ namespace NewFileOrder.ViewModels
 
             _fileManager = new FileManager(_db);
             Thread.Sleep(5500);
-            //_fileManager.AddRoot("C:/Users/janpr/Desktop/testdir");
+            _fileManager.AddRoot("C:/Users/janpr/Desktop/csharp");
             _tagManager = new TagManager(_db);
         }
         

@@ -121,8 +121,8 @@ namespace NewFileOrder
                 db.SaveChanges();
                 */
 
-                var file = db.Files.Include(f => f.FileTags).First();
-                var tag = db.Tags.First();
+                //var file = db.Files.Include(f => f.FileTags).First();
+                //var tag = db.Tags.First();
                 
                 /*file.FileTags.Add(new FileTag
                 {
@@ -131,8 +131,8 @@ namespace NewFileOrder
                 });*/
                 db.SaveChanges();
 
-                var fileCheck = db.Files.Include(f => f.FileTags).Single(f => f.FileId == file.FileId);
-                var tagCheck = db.Tags.Include(t => t.FileTags).Single(t => t.TagId == tag.TagId);
+               // var fileCheck = db.Files.Include(f => f.FileTags).Single(f => f.FileId == file.FileId);
+                //var tagCheck = db.Tags.Include(t => t.FileTags).Single(t => t.TagId == tag.TagId);
 
                 var window = new MainWindow
                 {
