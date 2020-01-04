@@ -72,6 +72,9 @@ PutDirectoryInDB(DirectoryModel dir)
             List<FileModel> filesList = new List<FileModel>();
             foreach (var filepath in files)
             {
+                bool isHidden = (File.GetAttributes(filepath) & FileAttributes.Hidden) == FileAttributes.Hidden;
+                if (isHidden)
+                { continue; }
                 var fp = filepath.Replace("\\", "/");
                 var name = fp.Split('/').Last();
                 var fpath = fp.Substring(0, fp.Length - name.Length - 1);
@@ -199,10 +202,13 @@ PutFilesInDB(List<FileModel> list)
                 catch (System.IO.IOException) {/*file is open or something*/}
 
             }
-
-            return BitConverter.ToString(_hasher.Hash);
+            try
+            {
+                return BitConverter.ToString(_hasher.Hash);
+            }
+            catch { return "kednsadlfa;lsdf;ja"; }
         }
-
+//TODO rewrite this method from scratch knowing that DateCreated is almost unique identifier
         private async Task Watch()
         {
             var realFiles = new List<FileModel>();
@@ -245,11 +251,11 @@ PutFilesInDB(List<FileModel> list)
                     continue;
                 }
                 //changed
-                    dbFile = dbFiles.Where(a => a.Name == realFile.Name).Where(b => b.Path != realFile.Path).Where(c => c.Hash == realFile.Hash).FirstOrDefault();
+                dbFile = dbFiles.Where(a => a.Name == realFile.Name).Where(b => b.Path == realFile.Path).Where(c => c.Created== realFile.Created).FirstOrDefault();
                 if (dbFile != null)
                 {
                     dbFile.Path = realFile.Path;
-                    ;
+                    dbFile.Hash = realFile.Hash;
                     dbFile.IsMissing = false;
                     dbFile.LastChecked = realFile.LastChecked;
                     continue;
