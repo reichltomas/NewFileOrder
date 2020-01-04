@@ -81,9 +81,10 @@ namespace NewFileOrder.ViewModels
 
         public void OpenFile(FileModel file)
         {
+            Console.WriteLine("aaa"+file.Name);
             FileViewModel vm = new FileViewModel(file);
             // here subscribe to commands (if any)
-            content = vm;
+            Content = vm;
         }
     }
 }

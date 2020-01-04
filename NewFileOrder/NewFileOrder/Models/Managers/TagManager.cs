@@ -15,7 +15,7 @@ namespace NewFileOrder.Models.Managers
         {
             List<TagModel> tags = new List<TagModel>();
             bool allTagsExist = true;
-            StringBuilder errMsg = new StringBuilder("Nastaly následující chyby se zadanými tagy:");
+            StringBuilder errMsg = new StringBuilder("Nastaly následující chyby se zadanými tagy:\n");
 
             foreach (string name in names)
             {

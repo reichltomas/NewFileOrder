@@ -9,7 +9,7 @@
     <ItemsControl.ItemTemplate>
       <DataTemplate>
         <Button Width="160" Height="160"
-                Command="{Binding OpenFile}"
+                Command="{Binding $parent[ItemsControl].DataContext.OpenFile}"
                 CommandParameter="{Binding .}">
           <DockPanel>
             <TextBlock DockPanel.Dock="Bottom" Text="{Binding Name}" />
