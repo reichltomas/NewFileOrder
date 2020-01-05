@@ -8,5 +8,6 @@ namespace NewFileOrder.Models.DbModels
     {
         string Name { get; set; }
         string Path { get; set; }
+        string FullPath { get; set; }
     }
 }

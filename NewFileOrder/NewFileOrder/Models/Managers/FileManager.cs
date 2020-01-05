@@ -30,12 +30,12 @@ namespace NewFileOrder.Models.Managers
 
         public FileManager(MyDbContext dbContext) : base(dbContext)
         {
-            Cleanup();
+            //Cleanup();
             Task t = new Task(async () =>
             {
                 while (true)
                 {
-                    Thread.Sleep(5000);
+                    Thread.Sleep(10000);
                     await Watch();
                 }
             });
@@ -43,30 +43,30 @@ namespace NewFileOrder.Models.Managers
         }
         public async void AddRoot(string path)
         {
-            var hash = HashDirectory(path);
-            path = path.Replace("\\", "/");
-            var name = path.Split('/').Last();
-            //-1 to not include /
-            var pth = path.Substring(0, path.Length - name.Length - 1);
             //Console.WriteLine()
-            var files = ListFiles(path);
-            await PutFilesInDB(files);
-            var dir = new DirectoryModel { IsRoot = true, Path = pth, Name = name, Hash = HashDirectory(path), };
+            var dir = new DirectoryModel { IsRoot = true, FullPath = path, Hash = HashDirectory(path), };
             await PutDirectoryInDB(dir);
-
+            var files = ListFiles(dir);
+            await PutFilesInDB(files);
         }
 
-        private async
-        Task
-PutDirectoryInDB(DirectoryModel dir)
+        public void AddRootIfNotInDb(string path)
+        {
+            var dir = new DirectoryModel { FullPath = path };
+            Console.WriteLine(dir.FullPath);
+            if (_db.Directories.Where(d => d.Path == dir.Path).Where(d => d.Name == dir.Name).Count() == 0)
+                AddRoot(path);
+        }
+
+        private async Task PutDirectoryInDB(DirectoryModel dir)
         {
             _db.Directories.Add(dir);
             await _db.SaveChangesAsync();
         }
         //ez and dumb
-        List<FileModel> ListFiles(string path)
+        List<FileModel> ListFiles(DirectoryModel dir)
         {
-            var files = Directory.GetFiles(path, "*", SearchOption.AllDirectories)
+            var files = Directory.GetFiles(dir.FullPath, "*", SearchOption.AllDirectories)
                                  .ToList();
 
             List<FileModel> filesList = new List<FileModel>();
@@ -74,18 +74,15 @@ PutDirectoryInDB(DirectoryModel dir)
             {
                 bool isHidden = (File.GetAttributes(filepath) & FileAttributes.Hidden) == FileAttributes.Hidden;
                 if (isHidden)
-                { continue; }
-                var fp = filepath.Replace("\\", "/");
-                var name = fp.Split('/').Last();
-                var fpath = fp.Substring(0, fp.Length - name.Length - 1);
+                    continue; 
                 var hash = HashFile(filepath);
                 filesList.Add(new FileModel
                 {
                     Created = File.GetCreationTime(filepath),
                     LastChecked = DateTime.Now,
-                    Name = name,
-                    Path = fpath,
-                    Hash = hash
+                    FullPath = filepath,
+                    Hash = hash,
+                    Directory = dir
                 });
                 //TODO code for pseudotag
             }
@@ -105,8 +102,8 @@ PutDirectoryInDB(DirectoryModel dir)
             }
             return filesList;
         }
-        async Task
-PutFilesInDB(List<FileModel> list)
+        
+        async Task PutFilesInDB(List<FileModel> list)
         {
             _db.Files.AddRange(list);
             await _db.SaveChangesAsync();
@@ -116,8 +113,8 @@ PutFilesInDB(List<FileModel> list)
             _db.Files.Update(file);
             await _db.SaveChangesAsync();
         }
-        async Task
-       UpdateFilesInDB(List<FileModel> files)
+
+        async Task UpdateFilesInDB(List<FileModel> files)
         {
             _db.Files.UpdateRange(files);
             await _db.SaveChangesAsync();
@@ -208,14 +205,14 @@ PutFilesInDB(List<FileModel> list)
             }
             catch { return "kednsadlfa;lsdf;ja"; }
         }
-//TODO rewrite this method from scratch knowing that DateCreated is almost unique identifier
+        //TODO rewrite this method from scratch knowing that DateCreated is almost unique identifier
         private async Task Watch()
         {
             var realFiles = new List<FileModel>();
-            var roots = await _db.Directories.Where(t => t.IsRoot == true).ToListAsync();
+            var roots = await _db.Directories.Include(d => d.Files).Where(t => t.IsRoot == true).ToListAsync();
             foreach (var root in roots)
             {
-                realFiles.AddRange(ListFiles(root.Path + "/" + root.Name));
+                realFiles.AddRange(ListFiles(root));
                 //check things recursively
             }
             var dbFiles = _db.Files.ToList();
@@ -223,8 +220,14 @@ PutFilesInDB(List<FileModel> list)
             foreach (var realFile in realFiles)
             {
                 realFile.Path = realFile.Path.Replace("\\", "/");
+
+                // comparing DirectoryIds instead of Directories may be unnecessary, but I don't want to deal with shit laSter
+
                 //nothing happened or file was found
-                var dbFile = dbFiles.Where(a => a.Name == realFile.Name).Where(b => b.Path == realFile.Path).Where(c => c.Hash == realFile.Hash).FirstOrDefault();
+                var dbFile = dbFiles.Where(a => a.Name == realFile.Name)
+                                    .Where(b => b.Directory.DirectoryId == realFile.Directory.DirectoryId)
+                                    .Where(c => c.Hash == realFile.Hash)
+                                    .FirstOrDefault();
                 if (dbFile != null)
                 {
                     dbFile.IsMissing = false;
@@ -232,8 +235,12 @@ PutFilesInDB(List<FileModel> list)
                     continue;
                 }
                 //rename in same directory,todo validate emptyfile
-                dbFile = dbFiles.Where(a => a.Name != realFile.Name).Where(b => b.Path == realFile.Path
-).Where(c => c.Hash == realFile.Hash).Where(d => d.Created == realFile.Created).FirstOrDefault();
+                dbFile = dbFiles.Where(a => a.Name != realFile.Name)
+                                .Where(b => b.Directory.DirectoryId == realFile.Directory.DirectoryId)
+                                .Where(c => c.Hash == realFile.Hash)
+                                .Where(d => d.Created == realFile.Created)
+                                .FirstOrDefault();
+
                 if (dbFile != null)
                 {
                     dbFile.Name = realFile.Name;
@@ -242,19 +249,25 @@ PutFilesInDB(List<FileModel> list)
                     continue;
                 }
                 //move, todo same files in 2 directories
-                dbFile = dbFiles.Where(a => a.Name == realFile.Name).Where(b => b.Path != realFile.Path).Where(x => x.Created == realFile.Created).Where(c => c.Hash == realFile.Hash).FirstOrDefault();
+                dbFile = dbFiles.Where(a => a.Name == realFile.Name)
+                                .Where(b => b.Directory.DirectoryId != realFile.Directory.DirectoryId)
+                                .Where(x => x.Created == realFile.Created)
+                                .Where(c => c.Hash == realFile.Hash)
+                                .FirstOrDefault();
                 if (dbFile != null)
                 {
-                    dbFile.Path = realFile.Path;
+                    dbFile.Directory = realFile.Directory;
                     dbFile.IsMissing = false;
                     dbFile.LastChecked = realFile.LastChecked;
                     continue;
                 }
                 //changed
-                dbFile = dbFiles.Where(a => a.Name == realFile.Name).Where(b => b.Path == realFile.Path).Where(c => c.Created== realFile.Created).FirstOrDefault();
+                dbFile = dbFiles.Where(a => a.Name == realFile.Name)
+                                .Where(b => b.Directory.DirectoryId == realFile.Directory.DirectoryId)
+                                .Where(c => c.Created == realFile.Created)
+                                .FirstOrDefault();
                 if (dbFile != null)
                 {
-                    dbFile.Path = realFile.Path;
                     dbFile.Hash = realFile.Hash;
                     dbFile.IsMissing = false;
                     dbFile.LastChecked = realFile.LastChecked;
@@ -326,7 +339,7 @@ PutFilesInDB(List<FileModel> list)
         }
 */
 
-        public List<FileModel> GetFilesWithTags(ICollection<TagModel> tags)
+        public List<FileModel> GetFilesWithTags(ICollection<TagModel> tags, bool includeMissing = false)
         {
             HashSet<FileModel> files = new HashSet<FileModel>(GetFilesFromFileTags(tags.First().FileTags).Where(a => a.IsMissing == false));
 
@@ -337,7 +350,10 @@ PutFilesInDB(List<FileModel> list)
             if (files.Count == 0)
                 throw new Exception("Nenalezen soubor, který by obsahoval všechny tagy");
 
-            return files.ToList().OrderBy(a=>a.Name).ToList();
+            if (includeMissing)
+                return files.OrderBy(a => a.Name).ToList();
+            else
+                return files.Where(a => !a.IsMissing).OrderBy(a => a.Name).ToList();
         }
 
         public List<FileModel> GetFilesFromFileTags(ICollection<FileTag> fileTags)

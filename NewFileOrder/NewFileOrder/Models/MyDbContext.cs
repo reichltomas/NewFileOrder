@@ -31,6 +31,10 @@ namespace NewFileOrder.Models
             builder.Entity<FileTag>().HasOne<TagModel>(ft => ft.Tag)
                                      .WithMany(t => t.FileTags)
                                      .HasForeignKey(ft => ft.TagId);
+
+            builder.Entity<FileModel>().HasOne<DirectoryModel>(f => f.Directory)
+                                       .WithMany(d => d.Files)
+                                       .IsRequired();
         }
     }
 }

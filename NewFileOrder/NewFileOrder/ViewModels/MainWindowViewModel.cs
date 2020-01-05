@@ -39,7 +39,7 @@ namespace NewFileOrder.ViewModels
 
             _fileManager = new FileManager(_db);
             Thread.Sleep(5500);
-            _fileManager.AddRoot("C:/Test");
+            _fileManager.AddRootIfNotInDb("C:/Test");
             _tagManager = new TagManager(_db);
         }
         
@@ -52,14 +52,14 @@ namespace NewFileOrder.ViewModels
 
             if (search.Length == 0)
             {
-                //show all, not missing!
-                vm = SearchAndSubscribeToCommands(_db.Files.Where(a=>a.IsMissing == false).ToList());
+                //show all, except missing
+                vm = SearchAndSubscribeToCommands(_db.Files.Where(f=>!f.IsMissing).ToList());
             }
             else
             {
                 try
                 {
-                    vm = SearchAndSubscribeToCommands(_fileManager.GetFilesWithTags(_tagManager.GetTagsByName(search.Split(' '))));
+                    vm = SearchAndSubscribeToCommands(_fileManager.GetFilesWithTags(_tagManager.GetTagsByName(search.Split(' '), true)));
                 } catch (Exception e)
                 {
                     vm = new ErrorViewModel(e.Message);

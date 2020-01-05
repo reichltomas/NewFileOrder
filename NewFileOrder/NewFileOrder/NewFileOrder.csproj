@@ -12,9 +12,13 @@
       <SubType>Designer</SubType>
     </AvaloniaResource>
     <AvaloniaResource Include="Assets\*" />
+    <AvaloniaResource Remove="Migrations\**" />
     <AvaloniaResource Remove="Services\**" />
+    <Compile Remove="Migrations\**" />
     <Compile Remove="Services\**" />
+    <EmbeddedResource Remove="Migrations\**" />
     <EmbeddedResource Remove="Services\**" />
+    <None Remove="Migrations\**" />
     <None Remove="Services\**" />
   </ItemGroup>
   <ItemGroup>
@@ -32,7 +36,13 @@
     <None Remove="Views\SearchResultsView.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Migrations\20200105140322_d.cs" />
+    <Compile Include="Migrations\20200105140322_d.designer.cs" />
+    <Compile Include="Migrations\MyDbContextModelSnapshot.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.8.3" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.9.1" />
     <PackageReference Include="Avalonia.Desktop" Version="0.8.3" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.8.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.0" />
