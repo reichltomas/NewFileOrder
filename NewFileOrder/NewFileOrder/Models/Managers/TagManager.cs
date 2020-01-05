@@ -7,31 +7,38 @@ using System.Text;
 
 namespace NewFileOrder.Models.Managers
 {
-    class TagManager:Manager
+    class TagManager : Manager
     {
         public TagManager(MyDbContext dbContext) : base(dbContext) { }
 
-        public List<TagModel> GetTagsByName(ICollection<string> names)
+        public List<TagModel> GetTagsByName(ICollection<string> names, bool includeFileTags = false)
         {
             List<TagModel> tags = new List<TagModel>();
-            bool allTagsExist = true;
+            bool tagError = false;
             StringBuilder errMsg = new StringBuilder("Nastaly následující chyby se zadanými tagy:\n");
+
+            IQueryable<TagModel> database;
+
+            if (includeFileTags)
+                database = _db.Tags.Include(t => t.FileTags);
+            else
+                database = _db.Tags;
 
             foreach (string name in names)
             {
-                var tm = _db.Tags.Include(t => t.FileTags).Where(t => t.Name.Equals(name));
-                if(tm.Count() == 1)
+                var tm = database.Where(t => t.Name.Equals(name));
+                if (tm.Count() == 1)
                     tags.Add(tm.First());
                 else
                 {
-                    allTagsExist = false;
+                    tagError = true;
                     if (tm.Count() == 0)
                         errMsg.AppendLine($"- zadaný tag {name} neexistuje");
                     else
                         errMsg.AppendLine($"- zadaný tag {name} má duplicitu, v databázi se nachází {tm.Count()}x, vyřeště prosím tento problém manuální úpravou databáze");
                 }
             }
-            if (!allTagsExist)
+            if (tagError)
                 throw new Exception(errMsg.ToString());
             return tags;
         }

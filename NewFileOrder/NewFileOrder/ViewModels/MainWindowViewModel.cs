@@ -59,7 +59,7 @@ namespace NewFileOrder.ViewModels
             {
                 try
                 {
-                    vm = SearchAndSubscribeToCommands(_fileManager.GetFilesWithTags(_tagManager.GetTagsByName(search.Split(' '))));
+                    vm = SearchAndSubscribeToCommands(_fileManager.GetFilesWithTags(_tagManager.GetTagsByName(search.Split(' '), true)));
                 } catch (Exception e)
                 {
                     vm = new ErrorViewModel(e.Message);

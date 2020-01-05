@@ -12,12 +12,17 @@
       <SubType>Designer</SubType>
     </AvaloniaResource>
     <AvaloniaResource Include="Assets\*" />
+    <AvaloniaResource Remove="Migrations\**" />
     <AvaloniaResource Remove="Services\**" />
+    <Compile Remove="Migrations\**" />
     <Compile Remove="Services\**" />
+    <EmbeddedResource Remove="Migrations\**" />
     <EmbeddedResource Remove="Services\**" />
+    <None Remove="Migrations\**" />
     <None Remove="Services\**" />
   </ItemGroup>
   <ItemGroup>
+    <AvaloniaResource Remove="Views\DirectoryManagerDialogView.xaml" />
     <AvaloniaResource Remove="Views\ErrorView.xaml" />
     <AvaloniaResource Remove="Views\FileView.xaml" />
     <AvaloniaResource Remove="Views\HomeView.xaml" />
@@ -25,6 +30,7 @@
     <AvaloniaResource Remove="Views\SearchResultsView.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Views\DirectoryManagerDialogView.xaml" />
     <None Remove="Views\ErrorView.xaml" />
     <None Remove="Views\FileView.xaml" />
     <None Remove="Views\HomeView.xaml" />
@@ -33,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.8.3" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.9.1" />
     <PackageReference Include="Avalonia.Desktop" Version="0.8.3" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.8.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.0" />
@@ -70,5 +77,15 @@
     <EmbeddedResource Include="Views\ErrorView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Views\DirectoryManagerDialogView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Views\DirectoryManagerDialogView.xaml.cs">
+      <DependentUpon>DirectoryManagerDialogView.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>
