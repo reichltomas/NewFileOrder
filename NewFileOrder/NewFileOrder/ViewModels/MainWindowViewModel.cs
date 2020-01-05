@@ -52,8 +52,8 @@ namespace NewFileOrder.ViewModels
 
             if (search.Length == 0)
             {
-                //show all
-                vm = SearchAndSubscribeToCommands(_db.Files.ToList());
+                //show all, not missing!
+                vm = SearchAndSubscribeToCommands(_db.Files.Where(a=>a.IsMissing == false).ToList());
             }
             else
             {

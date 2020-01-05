@@ -20,13 +20,20 @@ namespace NewFileOrder.ViewModels
 
         public void Open()
         {
-            new Process
+            try
             {
-                StartInfo = new ProcessStartInfo($"{file.Path}/{file.Name}")
+                new Process
                 {
-                    UseShellExecute = true
-                }
-            }.Start();
+                    StartInfo = new ProcessStartInfo($"{file.Path}/{file.Name}")
+                    {
+                        UseShellExecute = true
+                    }
+                }.Start();
+            }
+            catch
+            {
+                //error in file system idk what to do about that
+            }
         }
     }
 }
