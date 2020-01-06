@@ -6,16 +6,26 @@
              x:Class="NewFileOrder.Views.SearchResultsView">
   <Grid ColumnDefinitions="*,*" RowDefinitions="auto,*,auto,auto">
     <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0">Správce adresářů</TextBlock>
-    <DataGrid Grid.Column="0" Grid.Row="1">
-      
+    <DataGrid Grid.Column="0" Grid.Row="1" 
+              Items="{Binding Directories}"
+              SelectedItem="{Binding ActiveDirectory}">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Cesta k adresáři"
+                            Binding="{Binding FullPath}"
+                            Width="*" />
+        <DataGridTextColumn Header="Root"
+                            Binding="{Binding IsRoot}"
+                            Width="auto" />
+      </DataGrid.Columns>
     </DataGrid>
     <StackPanel Grid.Column="0" Grid.Row="2" 
                 Orientation="Horizontal">
-      
+      <Button Command="{Binding Add}">+</Button>
+      <Button Command="{Binding Remove}">-</Button>
     </StackPanel>
     <StackPanel Grid.Column="1" Grid.Row="1" Grid.RowSpan="2"
                 Orientation="Vertical">
-      
+      <TextBlock Text="{Binding ActiveDirectory.FullPath}" />
     </StackPanel>
     <Button Grid.Column="0" Grid.Row="3"
             IsDefault="True">Uložit</Button>

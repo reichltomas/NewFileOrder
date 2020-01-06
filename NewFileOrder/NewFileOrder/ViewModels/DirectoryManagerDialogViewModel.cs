@@ -33,5 +33,15 @@ namespace NewFileOrder.ViewModels
         {
 
         }
+
+        public void Add()
+        {
+
+        }
+
+        public void Delete()
+        {
+
+        }
     }
 }

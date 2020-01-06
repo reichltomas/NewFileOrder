@@ -41,10 +41,10 @@ namespace NewFileOrder.ViewModels
             _fileManager.AddRootIfNotInDb("C:/Test");
             _tagManager = new TagManager(_db);
         }
-        
+
         public void Search()
         {
-            
+
             string search = SearchPhrase.Trim().ToLower();
 
             ViewModelBase vm;
@@ -52,14 +52,15 @@ namespace NewFileOrder.ViewModels
             if (search.Length == 0)
             {
                 //show all, not missing!
-                vm = SearchAndSubscribeToCommands(_db.Files.Where(a=>a.IsMissing == false).ToList());
+                vm = SearchAndSubscribeToCommands(_db.Files.Where(a => a.IsMissing == false).ToList());
             }
             else
             {
                 try
                 {
                     vm = SearchAndSubscribeToCommands(_fileManager.GetFilesWithTags(_tagManager.GetTagsByName(search.Split(' '), true)));
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     vm = new ErrorViewModel(e.Message);
                 }
