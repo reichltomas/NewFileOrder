@@ -30,7 +30,7 @@ namespace NewFileOrder.Models.Managers
 
         public FileManager(MyDbContext dbContext) : base(dbContext)
         {
-            Cleanup();
+            //Cleanup();
             Task t = new Task(async () =>
             {
                 while (true)
@@ -54,6 +54,15 @@ namespace NewFileOrder.Models.Managers
             var dir = new DirectoryModel { IsRoot = true, Path = pth, Name = name, Hash = HashDirectory(path), };
             await PutDirectoryInDB(dir);
 
+        }
+        public void AddRootIfNotInDb(string path)
+        {
+            path = path.Replace("\\", "/");
+            var name = path.Split('/').Last();
+            //-1 to not include /
+            var pth = path.Substring(0, path.Length - name.Length - 1);
+            if (_db.Directories.Where(d => d.Path == pth).Where(d => d.Name == name).Count() == 0)
+                AddRoot(path);
         }
 
         private async
@@ -185,7 +194,7 @@ PutFilesInDB(List<FileModel> list)
             }
             catch { return "kednsadlfa;lsdf;ja"; }
         }
-//TODO rewrite this method from scratch knowing that DateCreated is almost unique identifier
+        //TODO rewrite this method from scratch knowing that DateCreated is almost unique identifier
         private async Task Watch()
         {
             var realFiles = new List<FileModel>();
@@ -228,7 +237,7 @@ PutFilesInDB(List<FileModel> list)
                     continue;
                 }
                 //changed
-                dbFile = dbFiles.Where(a => a.Name == realFile.Name).Where(b => b.Path == realFile.Path).Where(c => c.Created== realFile.Created).FirstOrDefault();
+                dbFile = dbFiles.Where(a => a.Name == realFile.Name).Where(b => b.Path == realFile.Path).Where(c => c.Created == realFile.Created).FirstOrDefault();
                 if (dbFile != null)
                 {
                     dbFile.Path = realFile.Path;
@@ -261,7 +270,7 @@ PutFilesInDB(List<FileModel> list)
             if (files.Count == 0)
                 throw new Exception("Nenalezen soubor, který by obsahoval všechny tagy");
 
-            return files.ToList().OrderBy(a=>a.Name).ToList();
+            return files.ToList().OrderBy(a => a.Name).ToList();
         }
 
         public List<FileModel> GetFilesFromFileTags(ICollection<FileTag> fileTags)
