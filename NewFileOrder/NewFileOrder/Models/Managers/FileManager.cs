@@ -132,30 +132,7 @@ PutFilesInDB(List<FileModel> list)
             await _db.SaveChangesAsync();
         }
 
-        //TODO check files when restarted
-        /*void CheckAfterRestart(List<FileModel> list)
-        {
-            foreach (FileModel file in list)
-            {
-                if (!File.Exists(FullPath(file)))
-                {
-                    file.IsMissing = true;
-                }
-                else
-                {
-
-                    file.Hash = HashFile(FullPath(file));
-                }
-                // if soubor neexistuje
-                //      mark as moved
-                // else soubor existuje
-                //      if hash souboru != hash z db (= file.Hash)
-                //          ulož do databáze nový hash
-            } // TODO: renaming
-            _db.Files.UpdateRange(list);
-        }*/
-
-        //todo někdy recursively
+               //todo někdy recursively
         List<DirectoryModel> ListDirectoryDirectories(string path)
         {
             Directory.GetDirectories(path);
@@ -280,60 +257,7 @@ PutFilesInDB(List<FileModel> list)
             await PutFilesInDB(newFiles);
 
         }
-        /*
-        public void OnRenamed(string path, string newName, string oldName)
-        {
-            //possible problem with empty files... 
-            var file = _db.Files.Where(b => b.Hash == HashFile(path)).Where(a => a.IsMissing == false).First();
-            file.Name = newName;
-            file.LastChecked = DateTime.Now;
-            UpdateFileInDB(file);
-        }
-
-        public void OnDeleted(object sender, FileSystemEventArgs e)
-        {
-            var name = e.Name;
-            //needs testing
-            var path = e.FullPath.Substring(0, e.FullPath.Length - name.Length).Trim('\\');
-            var file = _db.Files.Where(b => b.Name == name).Where(a => a.IsMissing == false).Where(c => c.Path == path).FirstOrDefault();
-            //DeleteFileFromDB(file);
-            file.IsMissing = true;
-            UpdateFileInDB(file);
-        }
-
-        public void OnCreated(object sender, FileSystemEventArgs e)
-        {
-            if (File.GetAttributes(e.FullPath).HasFlag(FileAttributes.Directory))
-                return; //ignore directories, only process files
-            var path = e.FullPath;
-            var name = e.Name;
-            FileModel file = _db.Files.Where(a => a.IsMissing == true).Where(b => b.Hash == HashFile(path)).FirstOrDefault();
-            if (file == null)
-            {
-                file = new FileModel { Hash = HashFile(path), Name = name, Path = path, LastChecked = DateTime.Now };
-                PutFileInDB(file);
-            }
-            else
-            {
-                file.IsMissing = false;
-                file.LastChecked = DateTime.Now;
-                UpdateFileInDB(file);
-            }
-        }
-
-        public void OnChanged(object sender, FileSystemEventArgs e)
-        { //check if dir
-            var name = e.Name;
-            var path = e.FullPath.Substring(0, e.FullPath.Length - name.Length).Trim('\\');
-            var file = _db.Files.Where(b => b.Name == name).Where(a => a.IsMissing == false).Where(c => c.Path == path).FirstOrDefault();
-            if (file != null)
-            {
-                file.Hash = HashFile(e.FullPath);
-                file.LastChecked = DateTime.Now;
-                PutFileInDB(file);
-            }
-        }
-*/
+        
 
         public List<FileModel> GetFilesWithTags(ICollection<TagModel> tags)
         {
