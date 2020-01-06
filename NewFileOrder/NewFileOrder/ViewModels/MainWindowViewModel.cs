@@ -15,7 +15,7 @@ namespace NewFileOrder.ViewModels
 
         private FileManager _fileManager;
         private TagManager _tagManager;
-
+C:\Users\Krtek\source\repos\reichltomas\NewFileOrder\NewFileOrder\NewFileOrder\ViewModels\MainWindowViewModel.cs
         ViewModelBase content;
 
         public ViewModelBase Content
@@ -79,7 +79,6 @@ namespace NewFileOrder.ViewModels
 
         public void OpenFile(FileModel file)
         {
-            Console.WriteLine("aaa"+file.Name);
             FileViewModel vm = new FileViewModel(file);
             // here subscribe to commands (if any)
             Content = vm;

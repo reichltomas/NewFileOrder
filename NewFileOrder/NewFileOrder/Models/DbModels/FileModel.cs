@@ -23,6 +23,10 @@ namespace NewFileOrder.Models.DbModels
         public string Metadata { get; set; }
         public IList<FileTag> FileTags { get; set; } 
         public bool IsMissing { get; set; } = false;
-
+        [NotMapped]
+        public string FullPath
+        {
+            get => Path + "/" + Hash;
+        }
     }
 }
