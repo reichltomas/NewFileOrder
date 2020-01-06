@@ -38,6 +38,11 @@
     <None Remove="Views\SearchResultsView.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Migrations\20200105190630_f.cs" />
+    <Compile Include="Migrations\20200105190630_f.designer.cs" />
+    <Compile Include="Migrations\MyDbContextModelSnapshot.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.8.3" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.9.1" />
     <PackageReference Include="Avalonia.Desktop" Version="0.8.3" />
