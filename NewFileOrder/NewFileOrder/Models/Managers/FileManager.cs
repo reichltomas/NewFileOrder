@@ -15,6 +15,7 @@ namespace NewFileOrder.Models.Managers
     {
         private const string HASH_OF_EMPTY_FILE = "lasdl;fj;lajdlfadfjladsjf;ajldfj;adjfla;d;;adslfja";
         private readonly SHA256 _hasher = SHA256.Create();
+        private int _watchTime = 10000;
 
 
         private string FullPath(IFileSystemEntry model)
@@ -30,13 +31,19 @@ namespace NewFileOrder.Models.Managers
 
         public FileManager(MyDbContext dbContext) : base(dbContext)
         {
-            //Cleanup();
+           // Cleanup();
             Task t = new Task(async () =>
             {
                 while (true)
                 {
-                    Thread.Sleep(5000);
-                    await Watch();
+                    Thread.Sleep(_watchTime);
+                    try
+                    {
+                        await Watch();
+                    }catch (InvalidOperationException)
+                    {
+                        _watchTime += 1000;
+                    }
                 }
             });
             t.Start();
@@ -48,7 +55,6 @@ namespace NewFileOrder.Models.Managers
             var name = path.Split('/').Last();
             //-1 to not include /
             var pth = path.Substring(0, path.Length - name.Length - 1);
-            //Console.WriteLine()
             var files = ListFiles(path);
             await PutFilesInDB(files);
             var dir = new DirectoryModel { IsRoot = true, Path = pth, Name = name, Hash = HashDirectory(path), };
@@ -65,9 +71,7 @@ namespace NewFileOrder.Models.Managers
                 AddRoot(path);
         }
 
-        private async
-        Task
-PutDirectoryInDB(DirectoryModel dir)
+        private async Task PutDirectoryInDB(DirectoryModel dir)
         {
             _db.Directories.Add(dir);
             await _db.SaveChangesAsync();
@@ -114,8 +118,7 @@ PutDirectoryInDB(DirectoryModel dir)
             }
             return filesList;
         }
-        async Task
-PutFilesInDB(List<FileModel> list)
+        async Task PutFilesInDB(List<FileModel> list)
         {
             _db.Files.AddRange(list);
             await _db.SaveChangesAsync();
@@ -125,14 +128,13 @@ PutFilesInDB(List<FileModel> list)
             _db.Files.Update(file);
             await _db.SaveChangesAsync();
         }
-        async Task
-       UpdateFilesInDB(List<FileModel> files)
+        async Task UpdateFilesInDB(List<FileModel> files)
         {
             _db.Files.UpdateRange(files);
             await _db.SaveChangesAsync();
         }
 
-               //todo někdy recursively
+        //todo někdy recursively
         List<DirectoryModel> ListDirectoryDirectories(string path)
         {
             Directory.GetDirectories(path);
@@ -201,10 +203,10 @@ PutFilesInDB(List<FileModel> list)
             var roots = await _db.Directories.Where(t => t.IsRoot == true).ToListAsync();
             foreach (var root in roots)
             {
-                realFiles.AddRange(ListFiles(root.Path + "/" + root.Name));
+                realFiles.AddRange(ListFiles(FullPath(root)));
                 //check things recursively
             }
-            var dbFiles = _db.Files.ToList();
+            var dbFiles = await _db.Files.ToListAsync();
             var newFiles = new List<FileModel>();
             foreach (var realFile in realFiles)
             {
@@ -249,7 +251,7 @@ PutFilesInDB(List<FileModel> list)
                 newFiles.Add(realFile);
 
             }
-            foreach (var f in dbFiles.Where(a => a.LastChecked < DateTime.Now.AddSeconds(-3)))
+            foreach (var f in dbFiles.Where(a => a.LastChecked < DateTime.Now.AddSeconds(-30)))
             {
                 f.IsMissing = true;
             }
@@ -257,7 +259,7 @@ PutFilesInDB(List<FileModel> list)
             await PutFilesInDB(newFiles);
 
         }
-        
+
 
         public List<FileModel> GetFilesWithTags(ICollection<TagModel> tags)
         {
@@ -270,7 +272,8 @@ PutFilesInDB(List<FileModel> list)
             if (files.Count == 0)
                 throw new Exception("Nenalezen soubor, který by obsahoval všechny tagy");
 
-            return files.ToList().OrderBy(a => a.Name).ToList();
+            return Enumerable.OrderBy(files, x => x.Name).ToList();
+
         }
 
         public List<FileModel> GetFilesFromFileTags(ICollection<FileTag> fileTags)

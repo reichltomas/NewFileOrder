@@ -15,7 +15,6 @@ namespace NewFileOrder.ViewModels
 
         private FileManager _fileManager;
         private TagManager _tagManager;
-C:\Users\Krtek\source\repos\reichltomas\NewFileOrder\NewFileOrder\NewFileOrder\ViewModels\MainWindowViewModel.cs
         ViewModelBase content;
 
         public ViewModelBase Content
@@ -38,7 +37,7 @@ C:\Users\Krtek\source\repos\reichltomas\NewFileOrder\NewFileOrder\NewFileOrder\V
             Content = new HomeViewModel();
 
             _fileManager = new FileManager(_db);
-            Thread.Sleep(100);
+            Thread.Sleep(1000);
             _fileManager.AddRootIfNotInDb("C:/Test");
             _tagManager = new TagManager(_db);
         }
