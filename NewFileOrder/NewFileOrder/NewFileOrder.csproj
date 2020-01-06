@@ -12,13 +12,9 @@
       <SubType>Designer</SubType>
     </AvaloniaResource>
     <AvaloniaResource Include="Assets\*" />
-    <AvaloniaResource Remove="Migrations\**" />
     <AvaloniaResource Remove="Services\**" />
-    <Compile Remove="Migrations\**" />
     <Compile Remove="Services\**" />
-    <EmbeddedResource Remove="Migrations\**" />
     <EmbeddedResource Remove="Services\**" />
-    <None Remove="Migrations\**" />
     <None Remove="Services\**" />
   </ItemGroup>
   <ItemGroup>

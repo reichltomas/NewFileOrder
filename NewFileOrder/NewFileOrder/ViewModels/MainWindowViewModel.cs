@@ -38,8 +38,8 @@ namespace NewFileOrder.ViewModels
             Content = new HomeViewModel();
 
             _fileManager = new FileManager(_db);
-            Thread.Sleep(5500);
-            _fileManager.AddRoot("C:/Test");
+            Thread.Sleep(100);
+            _fileManager.AddRootIfNotInDb("C:/Test");
             _tagManager = new TagManager(_db);
         }
         

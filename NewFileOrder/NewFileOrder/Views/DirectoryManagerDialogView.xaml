@@ -10,8 +10,8 @@
             <ItemsRepeater.ItemTemplate>
                 <DataTemplate>
                     <Button Width="160" Height="160"
-                  Command="{Binding $parent[ItemsRepeater].DataContext.OpenFile}"
-                  CommandParameter="{Binding .}">
+                            Command="{Binding $parent[ItemsRepeater].DataContext.OpenFile}"
+                            CommandParameter="{Binding .}">
                         <DockPanel>
                             <TextBlock DockPanel.Dock="Bottom" Text="{Binding Name}" />
                         </DockPanel>
