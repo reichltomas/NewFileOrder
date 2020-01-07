@@ -15,7 +15,14 @@ namespace NewFileOrder.Models.Managers
     {
         private const string HASH_OF_EMPTY_FILE = "lasdl;fj;lajdlfadfjladsjf;ajldfj;adjfla;d;;adslfja";
         private readonly SHA256 _hasher = SHA256.Create();
-        private int _watchTime = 10000;
+        private int _watchTime = 5000;
+        public event EventHandler<NewFileEventArgs> NewFilesEvent;
+
+        protected virtual void OnNewFiles(NewFileEventArgs e)
+        {
+            EventHandler<NewFileEventArgs> handler = NewFilesEvent;
+            handler?.Invoke(this, e);
+        }
 
 
         private string FullPath(IFileSystemEntry model)
@@ -31,7 +38,7 @@ namespace NewFileOrder.Models.Managers
 
         public FileManager(MyDbContext dbContext) : base(dbContext)
         {
-           // Cleanup();
+            //Cleanup();
             Task t = new Task(async () =>
             {
                 while (true)
@@ -40,7 +47,8 @@ namespace NewFileOrder.Models.Managers
                     try
                     {
                         await Watch();
-                    }catch (InvalidOperationException)
+                    }
+                    catch (InvalidOperationException)
                     {
                         _watchTime += 1000;
                     }
@@ -55,10 +63,10 @@ namespace NewFileOrder.Models.Managers
             var name = path.Split('/').Last();
             //-1 to not include /
             var pth = path.Substring(0, path.Length - name.Length - 1);
+            var dir = new DirectoryModel { IsRoot = true, Path = pth, Name = name, Hash = hash, };
+            await PutDirectoryInDB(dir);
             var files = ListFiles(path);
             await PutFilesInDB(files);
-            var dir = new DirectoryModel { IsRoot = true, Path = pth, Name = name, Hash = HashDirectory(path), };
-            await PutDirectoryInDB(dir);
 
         }
         public void AddRootIfNotInDb(string path)
@@ -122,6 +130,7 @@ namespace NewFileOrder.Models.Managers
         {
             _db.Files.AddRange(list);
             await _db.SaveChangesAsync();
+            OnNewFiles(new NewFileEventArgs { Files = list });
         }
         async void UpdateFileInDB(FileModel file)
         {
@@ -164,6 +173,7 @@ namespace NewFileOrder.Models.Managers
 
         public string HashDirectory(string path)
         {
+            return "zjistili jsme ze tohle neni dulezite";
             // assuming you want to include nested folders
             var files = Directory.GetFiles(path, "*", SearchOption.AllDirectories)
                                  .OrderBy(p => p).ToList();
@@ -196,7 +206,7 @@ namespace NewFileOrder.Models.Managers
             }
             catch { return "kednsadlfa;lsdf;ja"; }
         }
-        //TODO rewrite this method from scratch knowing that DateCreated is almost unique identifier
+        //TODO rewrite this method from scratch knowing that DateCreated is almost unique identifier and who cares about weird generated files
         private async Task Watch()
         {
             var realFiles = new List<FileModel>();
@@ -256,7 +266,11 @@ namespace NewFileOrder.Models.Managers
                 f.IsMissing = true;
             }
             await UpdateFilesInDB(dbFiles);
-            await PutFilesInDB(newFiles);
+
+            if (newFiles.Count > 0)
+            {
+                await PutFilesInDB(newFiles);
+            }
 
         }
 

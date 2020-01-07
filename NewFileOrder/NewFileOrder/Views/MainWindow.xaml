@@ -4,10 +4,16 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:v="clr-namespace:NewFileOrder.Views"
         x:Class="NewFileOrder.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="NewFileOrder">
-  
+  <Window.DataTemplates>
+    <DataTemplate DataType="vm:NotificationViewModel">
+      <v:CustomNotificationView />
+    </DataTemplate>
+  </Window.DataTemplates>
+
   <DockPanel>
     <Menu DockPanel.Dock="Top">
       <MenuItem Header="_File">
