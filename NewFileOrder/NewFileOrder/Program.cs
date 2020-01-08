@@ -30,10 +30,7 @@ namespace NewFileOrder
             // source of knowledge: https://docs.microsoft.com/en-us/ef/core/get-started/?tabs=visual-studio
             using (var db = new MyDbContext())
             {
-                var window = new MainWindow
-                {
-                    DataContext = new MainWindowViewModel(db),
-                };
+                var window = new MainWindow(db);
                 app.Run(window);
             }
         }
