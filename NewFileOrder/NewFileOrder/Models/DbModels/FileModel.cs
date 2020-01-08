@@ -26,7 +26,7 @@ namespace NewFileOrder.Models.DbModels
         [NotMapped]
         public string FullPath
         {
-            get => Path + "/" + Hash;
+            get => Path + "/" + Name;
         }
     }
 }
