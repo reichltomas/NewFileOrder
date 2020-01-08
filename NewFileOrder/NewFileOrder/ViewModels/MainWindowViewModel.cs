@@ -46,6 +46,7 @@ namespace NewFileOrder.ViewModels
             Content = new HomeViewModel();
 
             _fileManager = new FileManager(_db);
+            //it crashes less this way
             Thread.Sleep(1000);
             _fileManager.AddRootIfNotInDb("C:/Test");
             _fileManager.NewFilesEvent += fm_NewFilesAsync;
@@ -59,10 +60,12 @@ namespace NewFileOrder.ViewModels
         private void fm_NewFilesAsync(object sender, NewFileEventArgs e)
         {
             newFiles.AddRange(e.Files);
+            // we have to use UI thread or it will crash
             Dispatcher.UIThread.InvokeAsync(() =>
             {
                 ShowCustomManagedNotificationCommand.Execute().Subscribe();
             });
+            // todo do something with new files
 
         }
 

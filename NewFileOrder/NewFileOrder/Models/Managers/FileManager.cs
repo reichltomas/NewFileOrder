@@ -50,12 +50,14 @@ namespace NewFileOrder.Models.Managers
                     }
                     catch (InvalidOperationException)
                     {
+                        // if we have database collisions then dont check files that often
                         _watchTime += 1000;
                     }
                 }
             });
             t.Start();
         }
+        //todo get rid of this method
         public async void AddRoot(string path)
         {
             var hash = HashDirectory(path);
@@ -261,6 +263,8 @@ namespace NewFileOrder.Models.Managers
                 newFiles.Add(realFile);
 
             }
+            //when we dont see a file for a while we mark it as missing 
+            //Todo delete files that have been missing for a long time
             foreach (var f in dbFiles.Where(a => a.LastChecked < DateTime.Now.AddSeconds(-30)))
             {
                 f.IsMissing = true;
@@ -298,7 +302,7 @@ namespace NewFileOrder.Models.Managers
                 files.Add(ft.File);
             return files;
         }
-
+        //for testing purposes
         async private void Cleanup()
         {
             try
