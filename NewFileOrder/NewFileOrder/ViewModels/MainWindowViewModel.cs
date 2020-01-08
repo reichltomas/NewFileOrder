@@ -1,4 +1,6 @@
 ﻿using Avalonia.Controls.Notifications;
+using Avalonia.Threading;
+using Microsoft.EntityFrameworkCore;
 using NewFileOrder.Models;
 using NewFileOrder.Models.DbModels;
 using NewFileOrder.Models.Managers;
@@ -15,7 +17,6 @@ namespace NewFileOrder.ViewModels
     public class MainWindowViewModel : ViewModelBase
     {
         private MyDbContext _db;
-        private bool shouldLook = false;
         private List<FileModel> newFiles = new List<FileModel>();
 
         private FileManager _fileManager;
@@ -57,22 +58,17 @@ namespace NewFileOrder.ViewModels
 
         private void fm_NewFilesAsync(object sender, NewFileEventArgs e)
         {
-           newFiles.AddRange(e.Files);
-           shouldLook = true;
+            newFiles.AddRange(e.Files);
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                ShowCustomManagedNotificationCommand.Execute().Subscribe();
+            });
 
         }
 
         public void Search()
         {
-            if (shouldLook)
-            {
-
-            ShowCustomManagedNotificationCommand.Execute().Subscribe();
-                shouldLook = false;
-                //do something with new files
-                newFiles.Clear();
-            }
-
+           
             string search = SearchPhrase.Trim().ToLower();
 
             ViewModelBase vm;
@@ -113,7 +109,13 @@ namespace NewFileOrder.ViewModels
 
         public void OpenFile(FileModel file)
         {
-            FileViewModel vm = new FileViewModel(file);
+            var fileWithFileTags = _db.Files.Include(f => f.FileTags).Single(f => f.Name == file.Name);
+            foreach(var x in fileWithFileTags.FileTags)
+            {
+               var t = _db.Tags.Find(x.TagId);
+               x.Tag = t;
+            }
+            FileViewModel vm = new FileViewModel(fileWithFileTags);
             // here subscribe to commands (if any)
             Content = vm;
         }

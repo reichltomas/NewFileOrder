@@ -1,12 +1,16 @@
 ﻿using NewFileOrder.Models.DbModels;
 using ReactiveUI;
 using System.Diagnostics;
+using System.Drawing;
 
 namespace NewFileOrder.ViewModels
 {
     class FileViewModel : ViewModelBase
     {
         FileModel file;
+        string pth;
+        public string Pth { get => pth;  }
+
         public FileModel File
         {
             get => file;
@@ -16,6 +20,8 @@ namespace NewFileOrder.ViewModels
         public FileViewModel (FileModel file)
         {
             File = file;
+            pth = file.Path + file.Name;
+           //var x = Icon.ExtractAssociatedIcon(file.FullPath).ToBitmap();
         }
 
         public void Open()

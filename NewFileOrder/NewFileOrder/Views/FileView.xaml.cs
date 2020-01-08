@@ -9,6 +9,7 @@ namespace NewFileOrder.Views
         public FileView()
         {
             this.InitializeComponent();
+
         }
 
         private void InitializeComponent()
