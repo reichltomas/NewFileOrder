@@ -1,10 +1,11 @@
 ﻿using Avalonia.Controls.Notifications;
 using ReactiveUI;
+using System;
 using System.Reactive;
 
 namespace NewFileOrder.ViewModels
 {
-    public class NotificationViewModel
+    public class NotificationViewModel:INotification
     {
 
         public NotificationViewModel(IManagedNotificationManager manager)
@@ -19,5 +20,13 @@ namespace NewFileOrder.ViewModels
         public string Title { get; set; }
         public string Message { get; set; }
         public ReactiveCommand<Unit, Unit> ToTagCommand { get; }
+
+        public NotificationType Type =>NotificationType.Information;
+
+        public TimeSpan Expiration => TimeSpan.Zero;
+
+        public Action OnClick => null;
+
+        public Action OnClose => null;
     }
 }
