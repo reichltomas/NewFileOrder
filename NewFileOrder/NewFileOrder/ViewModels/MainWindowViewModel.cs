@@ -20,8 +20,9 @@ namespace NewFileOrder.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
+        public static readonly string VERSION = "0.0.1cs";
+
         private MyDbContext _db;
-        private bool shouldLook = false;
         private List<FileModel> newFiles = new List<FileModel>();
 
         private FileManager _fileManager;
@@ -36,6 +37,7 @@ namespace NewFileOrder.ViewModels
         {
             get => content;
             private set => this.RaiseAndSetIfChanged(ref content, value);
+            
         }
 
         string searchPhrase = "";
@@ -50,7 +52,8 @@ namespace NewFileOrder.ViewModels
         {
             this._db = db;
             _notificator = mnm;
-            Content = new HomeViewModel();
+            _tagManager = new TagManager(_db);
+            Content = new HomeViewModel(_tagManager.GetAllTags());
 
             _fileManager = new FileManager(_db);
             //it crashes less this way
@@ -58,7 +61,6 @@ namespace NewFileOrder.ViewModels
             //_fileManager.AddRootIfNotInDb("C:/Test");
             _fileManager.InitialDirectory();
             _fileManager.NewFilesEvent += Fm_NewFilesAsync;
-            _tagManager = new TagManager(_db);
             ShowCustomManagedNotificationCommand = ReactiveCommand.Create( () =>
             {
                NotificationManager.Show(new NotificationViewModel(NotificationManager) { Title = "Tag hele!", Message = "Chceš otagovat nové soubory?\nSpusť z menu Správce tagů: File > Manage tags" });
