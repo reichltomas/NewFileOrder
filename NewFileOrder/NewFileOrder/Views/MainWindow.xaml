@@ -13,22 +13,15 @@
       <v:CustomNotificationView />
     </DataTemplate>
   </Window.DataTemplates>
-
+  
   <DockPanel>
     <Menu DockPanel.Dock="Top">
       <MenuItem Header="_File">
-        <MenuItem Header="Add file(s) to database..." IsEnabled="False" />
-        <MenuItem Header="Add directory to database..."/>
+        <MenuItem Header="Add directory to database..." Command="{Binding OpenDirectoryManager}" />
           <!-- TODO open file chooser and pass chosen directory to FileManager.ListDirectoryFiles -->
         <Separator/>
-        <MenuItem Header="Manage tags" />
-        <Separator/>
-        <MenuItem Header="_Exit"/>
+        <MenuItem Header="Manage tags" Command="{Binding OpenTagManager}" />
           <!-- TODO -->
-      </MenuItem>
-      <MenuItem Header="_Edit">
-        <MenuItem Header="Copy"/>
-        <MenuItem Header="Paste"/>
       </MenuItem>
     </Menu>
     <StackPanel Orientation="Vertical"

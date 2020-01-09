@@ -4,14 +4,18 @@ using Avalonia.Markup.Xaml;
 
 namespace NewFileOrder.Views
 {
-    public class UserControl1 : Window
+    public class SimpleDialogView : Window
     {
-        public UserControl1()
+        public SimpleDialogView() { }
+        public SimpleDialogView(string message)
         {
             this.InitializeComponent();
 #if DEBUG
             this.AttachDevTools();
 #endif
+            this.FindControl<Button>("OKButton").Click += delegate { Close(); };
+
+            this.FindControl<TextBlock>("Message").Text = message;
         }
 
         private void InitializeComponent()
@@ -20,4 +24,3 @@ namespace NewFileOrder.Views
         }
     }
 }
-

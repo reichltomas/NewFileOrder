@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NewFileOrder.Models.Managers
 {
-    class NewFileEventArgs : EventArgs
+    public class NewFileEventArgs : EventArgs
     {
         public List<FileModel> Files{get;set ;}
     }

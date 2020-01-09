@@ -1,9 +1,13 @@
-﻿using Avalonia.Controls.Notifications;
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Controls.Notifications;
 using Avalonia.Threading;
 using Microsoft.EntityFrameworkCore;
 using NewFileOrder.Models;
 using NewFileOrder.Models.DbModels;
 using NewFileOrder.Models.Managers;
+using NewFileOrder.Views;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -17,12 +21,15 @@ namespace NewFileOrder.ViewModels
     public class MainWindowViewModel : ViewModelBase
     {
         private MyDbContext _db;
+        private bool shouldLook = false;
         private List<FileModel> newFiles = new List<FileModel>();
 
         private FileManager _fileManager;
         private TagManager _tagManager;
         private IManagedNotificationManager _notificator;
         ViewModelBase content;
+
+        public MainWindow MainWindow { get; set; }
 
         public ReactiveCommand<Unit, Unit> ShowCustomManagedNotificationCommand { get; }
         public ViewModelBase Content
@@ -48,16 +55,17 @@ namespace NewFileOrder.ViewModels
             _fileManager = new FileManager(_db);
             //it crashes less this way
             Thread.Sleep(1000);
-            _fileManager.AddRootIfNotInDb("C:/Test");
-            _fileManager.NewFilesEvent += fm_NewFilesAsync;
+            //_fileManager.AddRootIfNotInDb("C:/Test");
+            _fileManager.InitialDirectory();
+            _fileManager.NewFilesEvent += Fm_NewFilesAsync;
             _tagManager = new TagManager(_db);
             ShowCustomManagedNotificationCommand = ReactiveCommand.Create( () =>
             {
-               NotificationManager.Show(new NotificationViewModel(NotificationManager) { Title = "Tag hele!", Message = "Chceš otagovat nové soubory?" });
+               NotificationManager.Show(new NotificationViewModel(NotificationManager) { Title = "Tag hele!", Message = "Chceš otagovat nové soubory?\nSpusť z menu Správce tagů: File > Manage tags" });
             });
         }
 
-        private void fm_NewFilesAsync(object sender, NewFileEventArgs e)
+        private void Fm_NewFilesAsync(object sender, NewFileEventArgs e)
         {
             newFiles.AddRange(e.Files);
             // we have to use UI thread or it will crash
@@ -75,28 +83,17 @@ namespace NewFileOrder.ViewModels
             string search = SearchPhrase.Trim().ToLower();
 
             ViewModelBase vm;
-
-            if (search.Length == 0)
+            try
             {
-                //show all, not missing!
-                try
-                {
-                    vm = SearchAndSubscribeToCommands(_db.Files.Where(a => a.IsMissing == false).ToList());
-                }
-                catch (Exception e) {
-                    vm = new ErrorViewModel(e.Message);
-                }
-            }
-            else
-            {
-                try
-                {
+                if (search.Length == 0)
+                    //show all (except missing)
+                    vm = SearchAndSubscribeToCommands(_fileManager.GetAllFiles());
+                else
                     vm = SearchAndSubscribeToCommands(_fileManager.GetFilesWithTags(_tagManager.GetTagsByName(search.Split(' '), true)));
-                }
-                catch (Exception e)
-                {
-                    vm = new ErrorViewModel(e.Message);
-                }
+            }
+            catch (Exception e)
+            {
+                vm = new ErrorViewModel(e.Message);
             }
             Content = vm;
 
@@ -126,6 +123,18 @@ namespace NewFileOrder.ViewModels
         {
             get { return _notificator; }
             set { this.RaiseAndSetIfChanged(ref _notificator, value); }
+        }
+
+        public void OpenDirectoryManager()
+        {
+            var w = new ManagerDialogWindow(MainWindow).AsDirectoryManagerDialog(_fileManager);
+            w.ShowDialog(MainWindow);
+        }
+
+        public void OpenTagManager()
+        {
+            var w = new ManagerDialogWindow(MainWindow).AsTagManagerDialog(_fileManager, _tagManager);
+            w.ShowDialog(MainWindow);
         }
     }
 }

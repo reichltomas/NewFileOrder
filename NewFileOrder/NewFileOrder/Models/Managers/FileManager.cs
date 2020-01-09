@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace NewFileOrder.Models.Managers
 {
-    class FileManager : Manager
+    public class FileManager : Manager
     {
         private const string HASH_OF_EMPTY_FILE = "lasdl;fj;lajdlfadfjladsjf;ajldfj;adjfla;d;;adslfja";
         private readonly SHA256 _hasher = SHA256.Create();
@@ -81,6 +81,12 @@ namespace NewFileOrder.Models.Managers
                 AddRoot(path);
         }
 
+        public async void RemoveDirectory(DirectoryModel dir)
+        {
+            _db.Directories.Remove(dir);
+            await _db.SaveChangesAsync();
+        }
+
         private async Task PutDirectoryInDB(DirectoryModel dir)
         {
             _db.Directories.Add(dir);
@@ -134,12 +140,12 @@ namespace NewFileOrder.Models.Managers
             await _db.SaveChangesAsync();
             OnNewFiles(new NewFileEventArgs { Files = list });
         }
-        async void UpdateFileInDB(FileModel file)
+        public async void UpdateFileInDB(FileModel file)
         {
             _db.Files.Update(file);
             await _db.SaveChangesAsync();
         }
-        async Task UpdateFilesInDB(List<FileModel> files)
+        public async Task UpdateFilesInDB(List<FileModel> files)
         {
             _db.Files.UpdateRange(files);
             await _db.SaveChangesAsync();
@@ -279,7 +285,7 @@ namespace NewFileOrder.Models.Managers
         }
 
 
-        public List<FileModel> GetFilesWithTags(ICollection<TagModel> tags)
+        public List<FileModel> GetFilesWithTags(ICollection<TagModel> tags, bool includeMissing = false)
         {
             HashSet<FileModel> files = new HashSet<FileModel>(GetFilesFromFileTags(tags.First().FileTags).Where(a => a.IsMissing == false));
 
@@ -290,7 +296,10 @@ namespace NewFileOrder.Models.Managers
             if (files.Count == 0)
                 throw new Exception("Nenalezen soubor, který by obsahoval všechny tagy");
 
-            return Enumerable.OrderBy(files, x => x.Name).ToList();
+            if (includeMissing)
+                return Enumerable.OrderBy(files, x => x.Name).ToList();
+            else
+                return Enumerable.OrderBy(files.Where(f => !f.IsMissing), x => x.Name).ToList();
 
         }
 
@@ -302,7 +311,23 @@ namespace NewFileOrder.Models.Managers
                 files.Add(ft.File);
             return files;
         }
-        //for testing purposes
+
+        public List<FileModel> GetAllFiles(bool includeMissing = false, bool includeFileTags = false)
+        {
+            IQueryable<FileModel> dbTable;
+            if (includeFileTags)
+                dbTable = _db.Files.Include(f => f.FileTags);
+            else
+                dbTable = _db.Files;
+
+            if(includeMissing)
+                return Enumerable.OrderBy(dbTable, x => x.Name).ToList();
+            else
+                return Enumerable.OrderBy(dbTable.Where(f => !f.IsMissing), x => x.Name).ToList();
+        }
+
+        public List<DirectoryModel> GetAllDirectories() => Enumerable.OrderBy(_db.Directories, x => x.Name).ToList();
+
         async private void Cleanup()
         {
             try
@@ -313,6 +338,15 @@ namespace NewFileOrder.Models.Managers
                 await _db.SaveChangesAsync();
             }
             catch { }
+        }
+
+        public void InitialDirectory()
+        {
+            if(_db.Directories.Count() == 0)
+            {
+                var dir = Directory.CreateDirectory(Directory.GetCurrentDirectory() + "/nfo_files");
+                AddRoot(dir.FullName);
+            }
         }
     }
 }

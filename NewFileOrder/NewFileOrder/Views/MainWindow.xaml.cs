@@ -25,6 +25,8 @@ namespace NewFileOrder.Views
                 MaxItems = 3
             };
             DataContext = new MainWindowViewModel(_db, _notificationArea);
+
+            (DataContext as MainWindowViewModel).MainWindow = this;
         }
 
         private void InitializeComponent()

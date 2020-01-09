@@ -4,6 +4,9 @@
     <TargetFrameworks>netcoreapp3.0;net461</TargetFrameworks>
     <StartWorkingDirectory>$(MSBuildProjectDirectory)</StartWorkingDirectory>
   </PropertyGroup>
+  <PropertyGroup>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Update="**\*.xaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
@@ -19,21 +22,29 @@
   </ItemGroup>
   <ItemGroup>
     <AvaloniaResource Remove="Views\CustomNotificationView.xaml" />
-    <AvaloniaResource Remove="Views\DirectoryManagerDialogView.xaml" />
+    <AvaloniaResource Remove="Views\DirectoryManagerView.xaml" />
     <AvaloniaResource Remove="Views\ErrorView.xaml" />
     <AvaloniaResource Remove="Views\FileView.xaml" />
     <AvaloniaResource Remove="Views\HomeView.xaml" />
+    <AvaloniaResource Remove="Views\ManagerDialogWindow.xaml" />
     <AvaloniaResource Remove="Views\SearchBoxView.xaml" />
     <AvaloniaResource Remove="Views\SearchResultsView.xaml" />
+    <AvaloniaResource Remove="Views\SimpleDialogView.xaml" />
+    <AvaloniaResource Remove="Views\TagManagerView.xaml" />
+    <AvaloniaResource Remove="Views\YesNoDialogView.xaml" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Views\CustomNotificationView.xaml" />
-    <None Remove="Views\DirectoryManagerDialogView.xaml" />
+    <None Remove="Views\DirectoryManagerView.xaml" />
     <None Remove="Views\ErrorView.xaml" />
     <None Remove="Views\FileView.xaml" />
     <None Remove="Views\HomeView.xaml" />
+    <None Remove="Views\ManagerDialogWindow.xaml" />
     <None Remove="Views\SearchBoxView.xaml" />
     <None Remove="Views\SearchResultsView.xaml" />
+    <None Remove="Views\SimpleDialogView.xaml" />
+    <None Remove="Views\TagManagerView.xaml" />
+    <None Remove="Views\YesNoDialogView.xaml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.8.3" />
@@ -77,18 +88,33 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Views\DirectoryManagerDialogView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Views\CustomNotificationView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Views\DirectoryManagerDialogView.xaml.cs">
-      <DependentUpon>DirectoryManagerDialogView.xaml</DependentUpon>
-    </Compile>
+    <EmbeddedResource Include="Views\YesNoDialogView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Views\SimpleDialogView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Views\ManagerDialogWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Views\DirectoryManagerView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Views\TagManagerView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

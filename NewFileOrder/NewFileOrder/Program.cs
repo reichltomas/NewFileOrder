@@ -5,6 +5,7 @@ using NewFileOrder.ViewModels;
 using NewFileOrder.Views;
 using Avalonia.ReactiveUI;
 using Avalonia.Controls;
+using System;
 
 namespace NewFileOrder
 {
@@ -26,12 +27,18 @@ namespace NewFileOrder
         // container, etc.
         private static void AppMain(Application app, string[] args)
         {
-
-            // source of knowledge: https://docs.microsoft.com/en-us/ef/core/get-started/?tabs=visual-studio
-            using (var db = new MyDbContext())
+            try
             {
-                var window = new MainWindow(db);
-                app.Run(window);
+                // source of knowledge: https://docs.microsoft.com/en-us/ef/core/get-started/?tabs=visual-studio
+                using (var db = new MyDbContext())
+                {
+                    var window = new MainWindow(db);
+                    app.Run(window);
+                }
+            }
+            catch (InvalidOperationException e)
+            {
+                Console.WriteLine("The show must go on");
             }
         }
     }
