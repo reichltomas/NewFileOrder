@@ -4,8 +4,35 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="NewFileOrder.Views.HomeView">
-  <StackPanel>
-    <TextBlock>Status kontroly souborového systému: </TextBlock>
+  <UserControl.Styles>
+    <Style Selector="TextBlock">
+      <Setter Property="FontSize" Value="16"/>
+    </Style>
+  </UserControl.Styles>
+  <StackPanel Margin="16">
+    <TextBlock FontSize="32" FontWeight="Bold">Vítejte v New File Order!</TextBlock>
+    <TextBlock Text="{Binding Version}" />
+    <TextBlock Text=" "/>
     <TextBlock>Vyhledejte soubory zadáním tagů do vyhledávacího pole</TextBlock>
+    <TextBlock Text=" "/>
+    <TextBlock>Na pozadí probíhá kontrola adresářů. Při naletení nových souborů Vás upozorníme.</TextBlock>
+    <TextBlock>Pro přidání adresáře do aplikace: File > Add directory to database...</TextBlock>
+    <TextBlock>Pro přiřazení tagů souborům: File > Manage tags</TextBlock>
+    <TextBlock Text=" "/>
+    <TextBlock>Seznam tagů:</TextBlock>
+    <ItemsControl Items="{Binding Tags}">
+      <ItemsControl.ItemTemplate>
+        <DataTemplate>
+          <StackPanel>
+            <TextBlock Margin="0 0 20 0" Text="{Binding Name}" />
+          </StackPanel>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <WrapPanel Orientation="Horizontal"  />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+    </ItemsControl>
   </StackPanel>
 </UserControl>

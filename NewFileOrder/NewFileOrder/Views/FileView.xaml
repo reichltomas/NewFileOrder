@@ -28,7 +28,7 @@
       </ItemsControl.ItemsPanel>
     </ItemsControl>
     <!-- <TextBlock Text="{Binding }" />-->
-    <Button Width="200" Command="{Binding Open}">Open file</Button>
+    <Button Width="200" Command="{Binding Open}">Otevřít soubor</Button>
 
   </StackPanel>
 
