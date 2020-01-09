@@ -1,0 +1,34 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="NewFileOrder.Views.DirectoryManagerView">
+  <Grid ColumnDefinitions="*,*" RowDefinitions="*,auto">
+    <DataGrid Grid.Column="0" Grid.Row="0"
+              Items="{Binding Directories}"
+              SelectedItem="{Binding ActiveDirectory}"
+              Name="d"
+              IsReadOnly="True"
+              HorizontalScrollBarVisibility="Disabled">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Cesta k adresáři"
+                            Binding="{Binding FullPath}"
+                            Width="*" />
+        <DataGridTextColumn Header="Root"
+                            Binding="{Binding IsRoot}"
+                            Width="auto" />
+      </DataGrid.Columns>
+    </DataGrid>
+    <StackPanel Grid.Column="0" Grid.Row="1"
+                Orientation="Horizontal">
+      <Button Command="{Binding Add}">+</Button>
+      <Button Command="{Binding Remove}">-</Button>
+      <TextBlock Text="{Binding I}" />
+    </StackPanel>
+    <StackPanel Orientation="Vertical" DataContext="{Binding ActiveDirectory}"
+                Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
+      <TextBlock Text="{Binding Name}"/>
+    </StackPanel>
+  </Grid>
+</UserControl>

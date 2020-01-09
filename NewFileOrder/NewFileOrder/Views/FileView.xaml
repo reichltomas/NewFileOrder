@@ -1,0 +1,35 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="NewFileOrder.Views.FileView">
+
+  <StackPanel Margin="0" HorizontalAlignment="Center">
+
+    <TextBlock FontSize="40" Text="{Binding File.Name}" />
+    <TextBlock Text=" " />
+    <TextBlock Text=" " />
+    <TextBlock FontSize="40" Text="{Binding File.Path}" />
+    <TextBlock FontSize="20"  Text="Tagy" />
+
+    <ItemsControl Items="{Binding File.FileTags}">
+      <ItemsControl.ItemTemplate>
+        <DataTemplate>
+          <StackPanel>
+            <TextBlock Margin="0 0 20 0" Text="{Binding Tag.Name}" />
+          </StackPanel>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <WrapPanel Orientation="Horizontal"  />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+    </ItemsControl>
+    <!-- <TextBlock Text="{Binding }" />-->
+    <Button Width="200" Command="{Binding Open}">Open file</Button>
+
+  </StackPanel>
+
+</UserControl>
